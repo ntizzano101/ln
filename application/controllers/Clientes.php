@@ -77,7 +77,7 @@ class Clientes extends CI_Controller {
     public function editar($id)
     {
         $this->load->model('clientes_model');
-        $data["proceso"]="ingresar";
+        $data["proceso"]="editar";
         $data["cliente"]=$this->clientes_model->buscar($id);
         $data["lista_iva"]=$this->clientes_model->lista_iva();
         $data["lista_empresa"]=$this->clientes_model->lista_empresa();

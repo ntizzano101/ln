@@ -44,7 +44,7 @@ class Clientes_model extends CI_Model {
                 $datos=$this->db->query($sql, array($cuit))->result();
             }
             return count($datos)>0;
-        }
+            }
         }
         
         

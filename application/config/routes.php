@@ -57,7 +57,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['clientes'] = 'clientes';
 $route['clientes/ver/(:num)'] = 'clientes/ver/$1';
 $route['clientes/insertar'] = 'clientes/grabar';
-##ETIQUTAS
+##ETIQUETAS
 $route['etiquetas'] = 'clientes/etiquetas';
 $route['clientes/etiqueta_insertar'] = 'clientes/etiqueta_grabar';
 $route['clientes/etiqueta_editar/(:num)'] = 'clientes/etiqueta_editar/$1';
@@ -73,8 +73,17 @@ $route['ingreso'] = 'login/ingreso';
 $route['cambiar_contrasena'] = 'login/cambiar_contrasena';
 $route['salir'] = 'login/salida';
 
+#ROUTES PARA ARTICULOS
+$route['articulos'] = 'articulos';
+$route['articulos/insertar'] = 'articulos/grabar';
 
+$route['rubros'] = 'articulos/rubros';
+$route['articulos/rubro_insertar'] = 'articulos/rubro_grabar';
+$route['articulos/rubro_editar/(:num)'] = 'articulos/rubro_editar/$1';
 
+$route['categorias'] = 'articulos/categorias';
+$route['articulos/categoria_insertar'] = 'articulos/categoria_grabar';
+$route['articulos/categoria_editar/(:num)'] = 'articulos/categoria_editar/$1';
 //TABLERO
 
 //*******ROUTES CURSOS*************
