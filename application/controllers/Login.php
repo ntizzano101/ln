@@ -40,7 +40,7 @@ class Login extends CI_Controller {
 		$this->load->model('login_model');
 		$usu=$this->login_model->ingreso($usuario,$pass);
 		if($usu){
-				$datos=array("usuario"=>$usu[0]->username,"titulo"=>$usu[0]->apellido . ", " . $usu[0]->nombre);
+				$datos=array("id"=>$usu[0]->id,"usuario"=>$usu[0]->username,"titulo"=>$usu[0]->apellido . ", " . $usu[0]->nombre );
 				$this->session->set_userdata($datos);
 				redirect('tablero');			
 		}

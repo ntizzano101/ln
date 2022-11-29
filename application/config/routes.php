@@ -84,6 +84,13 @@ $route['articulos/rubro_editar/(:num)'] = 'articulos/rubro_editar/$1';
 $route['categorias'] = 'articulos/categorias';
 $route['articulos/categoria_insertar'] = 'articulos/categoria_grabar';
 $route['articulos/categoria_editar/(:num)'] = 'articulos/categoria_editar/$1';
+
+#ROUTES PARA FACTURAS  - PROVEEDORES
+$route['facturas'] = 'facturas';
+$route['facturas/ingresar'] = 'facturas/ingresar';
+$route['facturas/borrar'] = 'facturas/borrar';
+$route['facturas/ver'] = 'facturas/ver';
+
 //TABLERO
 
 //*******ROUTES CURSOS*************

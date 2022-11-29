@@ -20,16 +20,16 @@
             <li><a href="<?=base_url()?>etiquetas">Etiquetas </a></li>
             <li><hr></li>
             <li><a href="<?=base_url()?>conceptos/conceptosalumno">Cuenta Corriente</a></li>
-            <li><a href="<?=base_url()?>conceptos/conceptosalumno">Comprobantes</a></li>          
+            <li><a href="<?=base_url()?>comprob">Comprobantes</a></li>          
           </ul>
         </li> 
-		   <li class="dropdown">
+        <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Proveedores<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="<?=base_url()?>proveedores">Proveedores</a></li>
             <li><hr></li>
             <li><a href="<?=base_url()?>conceptos/conceptosalumno">Cuenta Corriente</a></li>
-            <li><a href="<?=base_url()?>conceptos/conceptosalumno">Comprobantes</a></li>          
+            <li><a href="<?=base_url()?>facturas">Facturas</a></li>          
           </ul>
         </li> 
 		  
