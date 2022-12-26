@@ -48,10 +48,17 @@
                                         <a class="btn-default fa fa-eye" title="Ver" 
                                             href="<?php echo base_url(); ?>proveedores/ver/<?=$prov->id?>">
                                         </a>
+                                        
                                         &nbsp; &nbsp;
                                         <a class="btn-default fa fa-pencil" title="Editar" 
                                             href="<?php echo base_url(); ?>proveedores/editar/<?=$prov->id?>">  
                                         </a>
+                                        
+                                        &nbsp; &nbsp;
+                                        <a class="btn-default fa fa-book" title="Cta Cte" 
+                                            href="<?php echo base_url(); ?>ctacte/ctacte/<?=$prov->id?>">
+                                        </a>
+                                        
                                     <?php if (!($prov->baja)){ ?>
                                         &nbsp; &nbsp;
                                         <a class="btn-default fa fa-eraser" title="Borrar" 

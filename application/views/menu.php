@@ -28,7 +28,7 @@
           <ul class="dropdown-menu">
             <li><a href="<?=base_url()?>proveedores">Proveedores</a></li>
             <li><hr></li>
-            <li><a href="<?=base_url()?>conceptos/conceptosalumno">Cuenta Corriente</a></li>
+            <li><a href="<?=base_url()?>proveedores">Cuenta Corriente</a></li>
             <li><a href="<?=base_url()?>facturas">Facturas</a></li>          
           </ul>
         </li> 

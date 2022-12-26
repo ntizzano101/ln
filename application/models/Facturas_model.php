@@ -95,11 +95,12 @@ class Facturas_model extends CI_Model {
                     $b="%".trim(strtoupper($b))."%";
                     $sql.=" AND UPPER(b.proveedor) LIKE ?";
                 }
+                $sql.=" ORDER BY a.fecha DESC, b.proveedor";
             }else{
-                $sql.=" AND FALSE";
+                $sql.=" ORDER BY a.fecha DESC, b.proveedor LIMIT 10 ";
             }
-             
-            $sql.=" LIMIT 10";
+            
+            //echo $sql;
             
             $retorno=$this->db->query($sql, array($b))->result();
             if((is_array($retorno))){
@@ -115,7 +116,7 @@ class Facturas_model extends CI_Model {
     public function buscar($id)
         {
         $sql="SELECT a.*, DATE_FORMAT(fecha, '%d/%m/%Y') AS fc_format,".
-            "SUBSTRING(a.per_iva, 1, 4) AS pi_anio, SUBSTRING(a.per_iva, 5,2) AS pi_mes,".    
+            "SUBSTRING(a.periodo_iva, 1, 4) AS pi_anio, SUBSTRING(a.periodo_iva, 5,2) AS pi_mes,".    
             " b.razon_soc AS empresa,".
             " c.proveedor AS prov_nombre, c.domicilio AS prov_dir, d.cond_iva AS prov_iva,".
             " e.cod_afip_t AS tp_comprob".    
@@ -188,14 +189,35 @@ class Facturas_model extends CI_Model {
         
     } 
     
+    public function factura_en_opago_existe($id)
+        {
+            $sql="SELECT * FROM opago_facturas WHERE id_factura=?";
+            $datos=$this->db->query($sql, array($id))->result();
+            return count($datos)>0;
+        }
+    
+    
     public function borrar($id)
         {
         $retorno="";
-        $sql="DELETE FROM facturas WHERE id_factura=?";
-        $this->db->query($sql, array($id));
-        $sql="DELETE FROM factura_items WHERE id_factura=?";
-        $this->db->query($sql, array($id));
-        $retorno ="El artículos se ha eliminado con éxito";
+        
+        $sql="SELECT * FROM opago_facturas WHERE id_factura = ?";
+        $datos=$this->db->query($sql, array($id))->result();
+        
+        if (count($datos)==0){//seteamos baja
+            $sql="DELETE FROM facturas WHERE id_factura=?";
+            $this->db->query($sql, array($id));
+            $sql="DELETE FROM factura_items WHERE id_factura=?";
+            $this->db->query($sql, array($id));
+            $retorno ="El artículos se ha eliminado con éxito";
+        }
+        return $retorno;
+        
+        
+        
+        
+        
+        
         return $retorno;
            
         }  
