@@ -19,8 +19,8 @@
             <li><a href="<?=base_url()?>clientes">Clientes</a></li>
             <li><a href="<?=base_url()?>etiquetas">Etiquetas </a></li>
             <li><hr></li>
-            <li><a href="<?=base_url()?>conceptos/conceptosalumno">Cuenta Corriente</a></li>
-            <li><a href="<?=base_url()?>comprob">Comprobantes</a></li>          
+            <li><a href="<?=base_url()?>cuentacorriente/clientes">Cuenta Corriente</a></li>
+            <li><a href="<?=base_url()?>ventas/listar">Comprobantes</a></li>          
           </ul>
         </li> 
         <li class="dropdown">

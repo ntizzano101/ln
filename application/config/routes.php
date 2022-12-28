@@ -91,6 +91,12 @@ $route['facturas/ingresar'] = 'facturas/ingresar';
 $route['facturas/borrar'] = 'facturas/borrar';
 $route['facturas/ver'] = 'facturas/ver';
 
+#ROUTES PARA VENTAS  - CLIENTES
+$route['ventas'] = 'ventas';
+$route['ventas/ingresar'] = 'ventas/ingresar';
+$route['ventas/borrar'] = 'ventas/borrar';
+$route['ventas/ver'] = 'vetnas/ver';
+$route['ventas/listar'] = 'vetnas/listar';
 //TABLERO
 
 //*******ROUTES CURSOS*************
