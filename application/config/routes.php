@@ -91,6 +91,9 @@ $route['facturas/ingresar'] = 'facturas/ingresar';
 $route['facturas/borrar'] = 'facturas/borrar';
 $route['facturas/ver'] = 'facturas/ver';
 
+#ROUTES PARA CUENTA CORRIENTE
+$route['ctacte/ctacte/(:num)'] = 'ctacte/ctacte/$1';
+
 #ROUTES PARA VENTAS  - CLIENTES
 $route['ventas'] = 'ventas';
 $route['ventas/ingresar'] = 'ventas/ingresar';

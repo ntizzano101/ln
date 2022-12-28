@@ -9,7 +9,7 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">Factura - Ver</div>
                 <div class="panel-body">
-                    <form role="search" method="POST" action="">
+                    <form role="search" method="POST" action="<?php echo base_url(); ?>facturas">
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="empresa">Empresa</label> 

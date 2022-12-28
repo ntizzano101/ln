@@ -33,8 +33,10 @@ class Facturas extends CI_Controller {
      ##CLIENTES
     public function index()
     {
+        $buscar="";
+        if (isset($_SESSION["flt_factura"])){$buscar=$_SESSION["flt_factura"];}
         $this->load->model('facturas_model');
-        $data["facturas"]=$this->facturas_model->listado("");
+        $data["facturas"]=$this->facturas_model->listado($buscar);
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('facturas/facturas.php',$data);
@@ -46,6 +48,7 @@ class Facturas extends CI_Controller {
         $buscar=$this->input->post('buscar');
         $this->load->model('facturas_model');
         $data["facturas"]=$this->facturas_model->listado($buscar);
+        $_SESSION["flt_factura"]=$buscar;
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('facturas/facturas.php',$data);
@@ -200,26 +203,32 @@ class Facturas extends CI_Controller {
     
     public function borrar($id)
     {
-        
-        
         $this->load->model('facturas_model');
         
-        
-        if ($this->facturas_model->borrar($id)){
-            $data["mensaje"]='<div class="alert alert-success alert-dismissible" role="alert">'.
+        $existe=$this->facturas_model->factura_en_opago_existe($id);
+        if($existe){
+            $data["mensaje"]='<div class="alert alert-danger alert-dismissible" role="alert">'.
                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
                 '<span aria-hidden="true">&times;</span></button>'.
-                'La factura '.$id.' se ha borrado con éxito'.
+                'La factura esta vinculada a una orden de pago'.
                 '</div>';
         }else{
-            $data["mensaje"]='<div class="alert alert-warning alert-dismissible" role="alert">'.
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
-                '<span aria-hidden="true">&times;</span></button>'.
-                'La factura  no se pudo borrar. Consulte con al administrador del Sistema'.
-                '</div>';
+            
+            if ($this->facturas_model->borrar($id)){
+                $data["mensaje"]='<div class="alert alert-success alert-dismissible" role="alert">'.
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
+                    '<span aria-hidden="true">&times;</span></button>'.
+                    'La factura se ha borrado con éxito'.
+                    '</div>';
+            }else{
+                $data["mensaje"]='<div class="alert alert-warning alert-dismissible" role="alert">'.
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
+                    '<span aria-hidden="true">&times;</span></button>'.
+                    'La factura no se puedo borrar. Consulte con al administrador del Sistema'.
+                    '</div>';
+            }
         }
         
-       
         $data["facturas"]=$this->facturas_model->listado("");
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
