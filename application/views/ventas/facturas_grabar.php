@@ -7,9 +7,9 @@
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-primary">
-                <div class="panel-heading">Factura - Ingresar</div>
+                <div class="panel-heading">Venta - Ingresar</div>
                 <div class="panel-body">
-                    <form role="search" method="POST" action="<?php echo base_url(); ?>facturas/grabar">
+                    <form role="search" method="POST" action="<?php echo base_url(); ?>ventas/grabar" onSubmit="habiliar()">
                         <div class="row">
                             <div class="col-md-6">
                                 
@@ -27,18 +27,30 @@
                                     <small><font color="red">
                                         <?php if (isset($error->empresa)){echo $error->empresa;}?> 
                                     </font></small>
-                                </div>
-                            <br>
-                                                               
-                                
-                                <label for="proveedor">Proveedor</label>
-                                <select name="proveedor" id="proveedor" class="form-control">
-                                    <option value="">Seleccione un proveedor</option>
-                                <?php foreach ($lista_proveedores as $prov) {?>
+                                </div>                            
+                            </div>                                                            
+                            <div class="col-md-6">                                   
+                                <label for="cod_afip">Tipo de comprobante</label>
+                                    <select name="cod_afip" id="cod_afip" class="form-control">
+                                        <option value="">Seleccione un tipo de comprobante</option>
+                                    </select>
+                                    <div id="errCod_afip">
+                                        <small><font color="red">
+                                            <?php if (isset($error->cod_afip)){echo $error->cod_afip;}?> 
+                                        </font></small>
+                                    </div>
+                            </div>
+                        </div>    
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="Cliente">Cliente</label>
+                                <select name="cliente" id="cliente" class="form-control">
+                                    <option value="">Seleccione un Cliente</option>
+                                <?php foreach ($lista_clientes as $prov) {?>
                                     <option value="<?=$prov->id?>"
-                                        <?php if ($prov->id==$factura->proveedor){ echo " selected ";}?>     
+                                        <?php if ($prov->id==$factura->cliente){ echo " selected ";}?>     
                                         >
-                                        <?=$prov->proveedor?>
+                                        <?=$prov->cliente?>
                                     </option>
                                 <?php }?>        
                                 </select>
@@ -46,73 +58,62 @@
                                     <small><font color="red">
                                         <?php if (isset($error->prov)){echo $error->prov;}?> 
                                     </font></small>
-                                </div>
-                            <br>
-                            
-                            <label for="provdir">Dirección</label>
-                            <input type="text" name="provdir" id="provdir" class="form-control" disabled/>
-                            <br>
-                            <label for="proviva">Código IVA</label>
-                            <input type="text" name="proviva" id="proviva" class="form-control" disabled/>
-                            <br>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label>Nro Factura</label>
+                                </div>                                  
+                            </div>                            
+                            <div class="col-md-3">                                                                   
+                                        
+                                            <label>Puerto</label>               
+                                            <select name="factnro1" id="factnro1" class="form-control">
+                                            </select>                                            
+                            </div>                                                                    
+                            <div class="col-md-3">            
+                                        <label>Nro Comprobante</label>     
+                                            <input type="text" name="factnro2" id="factnro2" 
+                                                value="<?=$factura->factnro2?>" class="form-control" readonly />
+                                        
+                                        <div id="errFactnro">
+                                            <small><font color="red">
+                                                <?php if (isset($error->factnro)){echo $error->factnro;}?> 
+                                            </font></small>
+                                        </div>
+                            </div>  
+                        </div>      
+                        <div class="row">
+                            <div class="col-md-6">            
+                                    <label for="fecha">Fecha</label>
+                                    <input type="date" name="fecha" id="fecha" 
+                                        value="<?=$factura->fecha?>" class="form-control"/> 
+                                    <div id="errFecha">
+                                        <small><font color="red">
+                                            <?php if (isset($error->fecha)){echo $error->fecha;}?> 
+                                        </font></small>
                                     </div>
-                                    <br>
-                                    <div class="col-md-3 ">
-                                        <input type="text" name="factnro1" id="factnro1" 
-                                            value="<?=$factura->factnro1?>" class="form-control" />
-                                    </div>
-                                    <div class="col-md-1">
-                                        <label>-</label>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <input type="text" name="factnro2" id="factnro2" 
-                                            value="<?=$factura->factnro2?>" class="form-control" />
-                                    </div>
                                 </div>
-                                <div id="errFactnro">
-                                    <small><font color="red">
-                                        <?php if (isset($error->factnro)){echo $error->factnro;}?> 
-                                    </font></small>
+                                <div class="col-md-6">  
+                                    <label for="Cuit">Cuit</label>
+                                    <input type="text" name="cuit" id="cuit" class="form-control"
+                                        value="<?=$factura->cuit?>" readonly="readonly">   
+                                    <div id="errCuit">
+                                        <small><font color="red">
+                                            <?php if (isset($error->cuit)){echo $error->cuit;}?> 
+                                        </font></small>
+                                    </div>                                 
+                                </div>                               
+                        </div>    
+                        <div class="row">
+                            <div class="col-md-6">            
+                                    <label for="cond">Condicion Frente al Iva</label>
+                                    <input type="text" name="proviva" id="proviva" 
+                                        value="" readonly="readonly"  class="form-control"/>                                     
                                 </div>
-                                <br>
-                                
-                                <label for="fecha">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" 
-                                    value="<?=$factura->fecha?>" class="form-control"/> 
-                                <div id="errFecha">
-                                    <small><font color="red">
-                                        <?php if (isset($error->fecha)){echo $error->fecha;}?> 
-                                    </font></small>
-                                </div>
-                                <br>    
-                                    
-                                <label for="periva">Período de IVA</label>
-                                <input type="text" name="periva" id="periva" class="form-control"
-                                    value="<?=$factura->periva?>"   placeholder="mm/yyyy"/>   
-                                <div id="errPeriva">
-                                    <small><font color="red">
-                                        <?php if (isset($error->periva)){echo $error->periva;}?> 
-                                    </font></small>
-                                </div>
-                                <br>      
-                                
-                                <label for="cod_afip">Tipo de comprobante</label>
-                                <select name="cod_afip" id="cod_afip" class="form-control">
-                                    <option value="">Seleccione un tipo de comprobante</option>
-                                </select>
-                                <div id="errCod_afip">
-                                    <small><font color="red">
-                                        <?php if (isset($error->cod_afip)){echo $error->cod_afip;}?> 
-                                    </font></small>
-                                </div>
-                            </div>    
-                                
-                        </div>
+                                <div class="col-md-6">  
+                                    <label for="Direccion">Direccion</label>
+                                    <input type="text" name="provdir" id="provdir" class="form-control"
+                                        value="" readonly="readonly">                                       
+                                </div>                               
+                        </div>    
+                                        
+                        
                         
                         <br>
                         <hr>  
@@ -199,7 +200,7 @@
                             <div class="col-md-6">
                             <label for="intImpNeto">Importe Neto</label>
                             <input type="text" name="intImpNeto" id="intImpNeto" 
-                                value="<?=$factura->intImpNeto?>" class="form-control"/>
+                                value="<?=$factura->intImpNeto?>" class="form-control" readonly/>
                             <div id="errIntImpNeto">
                                 <small><font color="red">
                                     <?php if (isset($error->intImpNeto)){echo $error->intImpNeto;}?> 
@@ -209,14 +210,14 @@
                             
                             <label for="intIva">IVA</label>
                             <input type="text" name="intIva" id="intIva" 
-                                value="<?=$factura->intIva?>" class="form-control"/>
+                                value="<?=$factura->intIva?>" class="form-control" readonly/>
                             <div id="errIntIva">
                                 <small><font color="red">
                                     <?php if (isset($error->intIva)){echo $error->intIva;}?> 
                                 </font></small>
                             </div>
                             <br>
-                            
+                            <!--
                             <label for="intPerIngB">Percepción Ing. Brutos</label>
                             <input type="text" name="intPerIngB" id="intPerIngB" class="form-control"/>
                             <div id="errIntPerIngB">
@@ -252,16 +253,16 @@
                                 </font></small>
                             </div>
                             <br>
-                            
-                            <label for="intImpExto">Importe excento</label>
-                            <input type="text" name="intImpExto" id="intImpExto" class="form-control"/>
+                            -->
+                            <label for="intImpExto">Importe Exento</label>
+                            <input type="text" name="intImpExto" id="intImpExto" readonly="readonly" class="form-control"/>
                             <div id="errIntImpExto">
                                 <small><font color="red">
                                     <?php if (isset($error->errIntImpExto)){echo $error->errIntImpExto;}?> 
                                 </font></small>
                             </div>
                             <br>
-                            
+                            <!--
                             <label for="intConNoGrv">Conc. no Gravados</label>
                             <input type="text" name="intConNoGrv" id="intConNoGrv" class="form-control"/>
                             <div id="errIntConNoGrv">
@@ -270,9 +271,9 @@
                                 </font></small>
                             </div>
                             <br>
-                            
+                                -->
                             <label for="intTotal">Total</label>
-                            <input type="text" name="intTotal" id="intTotal" class="form-control"/>
+                            <input type="text" name="intTotal" id="intTotal" value="0" readonly class="form-control"/>
                             <br>
                             
                             </div>
@@ -291,7 +292,7 @@
                         <br><br>
                         
                         <input type="hidden" id="items" name="items" value='<?=$factura->items?>'>    
-                        <button type="submit" class="btn btn-primary">Grabar</button>
+                        <button type="submit" id="aceptar" class="btn btn-primary">Grabar</button>
                     
                     </form>  
                 </div>
@@ -358,18 +359,22 @@
                         <div class="row">
                             <label for="itemIva">IVA</label>
                             <select name="itemIva" id="itemIva" class="form-control">
+                             <!--
                                 <option value="0" selected="true" >0003 (0%)</option>
-                                <option value="0.105">0004 (10.5%)</option>
-                                <option value="0.21">0005 (21%)</option>
+                               
+                                
                                 <option value="0.27">0006 (26%)</option>
                                 <option value="0.05">0008 (5%)</option>
                                 <option value="0.025">0009 (2.5%)</option>
+                                -->
+                                <option value="0.21">0005 (21%)</option>
+                                <option value="0">Exento</option>
                             </select>
                         </div>
 
                         <div class="row">
                             <label for="itemTotal">Total</label>
-                            <input type="text" name="itemTotal" id="itemTotal" class="form-control"/> 
+                            <input type="text" readonly name="itemTotal" id="itemTotal" class="form-control"  /> 
                         </div>
                         
                     </div>
@@ -417,62 +422,75 @@ $(document).ready(function(){
     
     
     
-    $('#factnro1').mask('9999');
+   // $('#factnro1').mask('99999');
     $('#factnro2').mask('99999999');
-    $('#periva').mask('99/9999');
-    
-    $.post(CFG.url + 'Ajax/busca_proveedor/',
-        {id:$("#proveedor").val()},
+
+    $.post(CFG.url + 'Ajax/busca_cliente/',
+        {id:$("#cliente").val()},
         function(data){
             $("#provdir").val(data.domicilio);
             $("#proviva").val(data.cond_iva);
-
+            $("#cuit").val(data.cuit);
         });
         
-    if($("#proveedor").val()==="" || $("#empresa").val()===""){
+    if($("#cliente").val()==="" || $("#empresa").val()===""){
         $("#cod_afip").html('<option value="">Sin tipos de comprobante</option>');
     }else{
-        $.post(CFG.url + 'Ajax/busca_tp_comprob/',
-        {proveedor:$("#proveedor").val(),empresa:$("#empresa").val()},
+        $.post(CFG.url + 'Ajax/busca_tp_comprob_cl/',
+        {proveedor:$("#cliente").val(),empresa:$("#empresa").val()},
         function(data){
             $("#cod_afip").html(data.combo);
             $("#errCod_afip").html("");
         });
-    }
+    }  
     
     
     
-    
-    $("#proveedor").change(function(){
+    $("#cliente").change(function(){
         $("#errProv").html("");
-        $.post(CFG.url + 'Ajax/busca_proveedor/',
+        $.post(CFG.url + 'Ajax/busca_cliente/',
             {id:$(this).val()},
             function(data){
                 $("#provdir").val(data.domicilio);
                 $("#proviva").val(data.cond_iva);
-                
+                $("#cuit").val(data.cuit);
+                $("#itemIva").html("")
+                if($.trim(data.cond_iva)=="Consumidor Final" || $.trim(data.cond_iva)=="Exento"){
+                    $("#itemIva").html("<option value='0' Selected='Selected'>Exento</option>");
+                }
+                else{
+                    $("#itemIva").html('<option value=".105">10,5%</option><option value=".21" Selected="Selected">21%</option>');
+                }                
             });
         if($(this).val()==="" || $("#empresa").val()===""){
             $("#cod_afip").html('<option value="">Sin tipos de comprobante</option>');
-        }else{
-            $.post(CFG.url + 'Ajax/busca_tp_comprob/',
-            {proveedor:$(this).val(),empresa:$("#empresa").val()},
-            function(data){
+        }else{        
+            $.post(CFG.url + 'Ajax/busca_tp_comprob_cl/',
+            {cliente:$(this).val(),empresa:$("#empresa").val()},
+            function(data){                
                 $("#cod_afip").html(data.combo);
                 $("#errCod_afip").html("");
+                $("#factnro1").html("");
+                $.post(CFG.url + 'Ajax/busca_puertos/',
+                     {id:$("#cod_afip").val(),empresa:$("#empresa").val()},
+                     function(data){
+                      $("#factnro1").html(data.combo);              
+                });     
             });
+           
         }    
             
     });
+
     
     $("#empresa").change(function(){
         $("#errEmp").html("");
-        if($(this).val()==="" || $("#proveedor").val()===""){
+        if($(this).val()==="" || $("#cliente").val()===""){
             $("#cod_afip").html('<option value="">Sin tipos de comprobante</option>');
             
         }else{
-            $.post(CFG.url + 'Ajax/busca_tp_comprob/',
-            {proveedor:$("#proveedor").val(),empresa:$(this).val()},
+            $.post(CFG.url + 'Ajax/busca_tp_comprob_cl/',
+            {cliente:$("#cliente").val(),empresa:$(this).val()},           
             function(data){
                 $("#cod_afip").html(data.combo);
                 $("#errCod_afip").html("");
@@ -480,12 +498,23 @@ $(document).ready(function(){
         }    
             
     });
+
+    $("#cod_afip").change(function(){
+        $("#factnro1").html("");
+        $.post(CFG.url + 'Ajax/busca_puertos/',
+            {id:$(this).val(),empresa:$("#empresa").val()},
+            function(data){
+                $("#factnro1").html(data.combo);              
+            });       
+    });
+
+
     
-    $('#factnro1').keyup(function(){ $("#errFactnro").html("");});
+    //$('#factnro1').keyup(function(){ $("#errFactnro").html("");});
     $('#factnro2').keyup(function(){ $("#errFactnro").html("");});
     $('#fecha').keyup(function(){ $("#errFecha").html("");});
     $('#fecha').change(function(){ $("#errFecha").html("");});
-    $('#periva').keyup(function(){ $("#errPeriva").html("");});
+    $('#cuit').keyup(function(){ $("#errCuit").html("");});
     $('#formaPago').change(function(){ $("#errFormaPago").html("");})
     
     $("#itemCant").keyup(function(){ calcPrItem(); });
@@ -505,7 +534,7 @@ $(document).ready(function(){
     $("#intPerStaFe").keyup(function(){$("#errIntPerStaFe").html(""); calcTotal(); });
     $("#intImpExto").keyup(function(){$("#errIntConNoGrv").html(""); calcTotal(); });
     $("#intConNoGrv").change(function(){$("#errIntImpExto").html(""); calcTotal(); });
-    
+    $("#aceptar").click(function(){document.getElementById('empresa').disabled=false;document.getElementById('cliente').disabled=false;});
     $("#bntIngItem").click(function(){
         if(!(isNaN($("#itemTotal").val()))){
             $.post(CFG.url + 'Ajax/carga_item/',
@@ -522,6 +551,7 @@ $(document).ready(function(){
                     $("#items").val(data.items);
                     $("#cpFl").html(data.cpFl);
                     $("#intImpNeto").val(data.intImpNeto);
+                    $("#intImpExto").val(data.intImpExto);
                     $("#intIva").val(data.intIva);
                     calcTotal();
                     $("#mdlItem").modal("hide");
@@ -552,7 +582,7 @@ function verMdItem(){
     $("#itemDesc").val("");
     $("#itemCant").val("");
     $("#itemPrcU").val("");
-    $("#itemIva").val(0);
+    //$("#itemIva").val(0);
     $("#itemTotal").val("");
     $("#itemTxtBsq").val("");
     $("#mdlItem").modal("show");
@@ -603,8 +633,7 @@ function calcTotal(){
     intPerGnc=parseFloat($("#intPerGnc").val());
     intPerStaFe=parseFloat($("#intPerStaFe").val());
     intImpExto=parseFloat($("#intImpExto").val());
-    intConNoGrv=parseFloat($("#intConNoGrv").val());
-    
+    intConNoGrv=parseFloat($("#intConNoGrv").val());  
     total=0.00;
     if(!(isNaN(intImpNeto))){total+=intImpNeto;}
     if(!(isNaN(intIva))){total+=intIva;}
@@ -616,7 +645,23 @@ function calcTotal(){
     if(!(isNaN(intConNoGrv))){total+=intConNoGrv;}
     
     $("#intTotal").val(total);    
-    
+    //Si el total no es cero entonces tengo que bloquar Empresa y Cliente
+    if(total != 0.00){
+        document.getElementById('empresa').disabled=true;
+        document.getElementById('cliente').disabled=true;
+        
+    } 
+    else    
+    {
+        document.getElementById('empresa').disabled=false;
+        document.getElementById('cliente').disabled=false;
+        
+    }
 }
+function habilitar(){
+        document.getElementById('empresa').disabled=false;
+        document.getElementById('cliente').disabled=false;
+}
+
     
 </script>

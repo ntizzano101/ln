@@ -14,6 +14,8 @@ class Ajax extends CI_Controller {
         }
         $this->send($resp);
     }
+
+
     
     public function busca_tp_comprob() {
         $proveedor=$this->input->post('proveedor');
@@ -101,7 +103,7 @@ class Ajax extends CI_Controller {
         $data = new stdClass();
         $data->items= json_encode($mtzItems);
         
-        $i=0; $cpFl=""; $intImpNeto=0.00; $intIva=0.00;
+        $i=0; $cpFl=""; $intImpNeto=0.00; $intIva=0.00;$intImpExto=0.00;
         foreach ($mtzItems as $fl) {
             ++$i;
             $cpFl.="<tr>".
@@ -116,12 +118,18 @@ class Ajax extends CI_Controller {
                     ' onclick="quitaItem('.$i.')">'.
                     "</td>".
                     "</tr>";
-            $intImpNeto+=$fl["cant"]*$fl["prcu"];
-            $intIva+=$fl["cant"]*$fl["iva"]*$fl["prcu"];
+            if($fl["txiva"]=="Exento"){
+                $intImpExto+=$fl["cant"]*$fl["prcu"];
+            }   
+            else{     
+                $intImpNeto+=$fl["cant"]*$fl["prcu"];
+                $intIva+=$fl["cant"]*$fl["iva"]*$fl["prcu"];
+                }
             }
         
         $data->cpFl= $cpFl;        
         $data->intImpNeto= $intImpNeto;
+        $data->intImpExto= $intImpExto;
         $data->intIva= $intIva;
         $resp=json_decode(json_encode($data), true);
         $this->send($resp);
@@ -189,6 +197,69 @@ class Ajax extends CI_Controller {
 
         exit(json_encode($send, JSON_FORCE_OBJECT));
 
+    }
+
+    public function busca_cliente() {
+        $id=$this->input->post('id');
+        if(is_numeric($id)){
+        $this->load->model('ventas_model');
+        $prov=$this->ventas_model->buscar_cliente($id);
+        $resp=json_decode(json_encode($prov), true);
+        }else{
+            $resp=json_decode(json_encode(array()), true);
+        }
+        $this->send($resp);
+    }
+
+
+    public function busca_tp_comprob_cl() {
+        $cliente=$this->input->post('cliente');
+        $empresa=$this->input->post('empresa');
+        $this->load->model('ventas_model');
+        $tipos=$this->ventas_model->lista_comprobantes($empresa,$cliente);
+        $data = new stdClass();
+        $combo=""; 
+        foreach ($tipos as $tp) {
+            
+            $combo.='<option value="'.$tp->id.'">'.$tp->nombre.'</option>';
+        }
+        //Solo Para  LA NICOLEÑA
+        if($empresa==2){$combo.='<option value="">I 00I INTERNO</option>'; }   
+        $combo.='<option value="">X 00X REMITO</option>';        
+        $combo.='<option value="">P 00P PRESUPUESTO</option>';        
+        if($combo==""){$combo='<option value="">Sin tipos de comprobante</option>';}       
+        $data->combo= $combo;   
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp);       
+    }
+
+    public function busca_puertos() {
+         $id=$this->input->post('id');
+         $empresa=$this->input->post('empresa');
+         $rta=array("00001");
+         if($id>0){
+             if($empresa==1){
+                //embotelladora
+                    $rta=array("00003","00004","00005","00006","00007");
+             }
+             if($empresa==2){
+                //es en negro
+                $rta=array();
+             }
+             if($empresa==3){
+                $rta=array("00002");
+             }
+
+         }
+        $data = new stdClass();
+        $combo=""; 
+        foreach ($rta as $tp) {            
+            $combo.='<option value="'.$tp.'">'.$tp.'</option>';
+        }        
+        $data->combo= $combo;   
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp);        
+         
     }
 
 }

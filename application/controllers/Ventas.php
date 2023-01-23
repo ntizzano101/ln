@@ -33,6 +33,7 @@ class Ventas extends CI_Controller {
      ##CLIENTES
     public function index()
     {
+       
         $this->load->model('ventas_model');
         $data["facturas"]=$this->ventas_model->listado("");
         $this->load->view('encabezado.php');
@@ -43,6 +44,7 @@ class Ventas extends CI_Controller {
     
     public function buscar()
     {
+       
         $buscar=$this->input->post('buscar');
         $this->load->model('ventas_model');
         $data["facturas"]=$this->ventas_model->listado($buscar);
@@ -61,7 +63,7 @@ class Ventas extends CI_Controller {
         $obj->cliente="";
         $obj->factnro1="";
         $obj->factnro2="";
-        $obj->fecha="";
+        $obj->fecha=date('Y-m-d');
         $obj->periva="";
         $obj->cod_afip="";
         $obj->formaPago="";
@@ -72,11 +74,12 @@ class Ventas extends CI_Controller {
         $obj->intPerGnc="";
         $obj->intConNoGrv="";
         $obj->obs="";
+        $obj->cuit="";
         $obj->items="[]";
         
         
         $data["factura"]=$obj;
-        $data["lista_clientes"]=$this->ventas_model->lista_proveedores();
+        $data["lista_clientes"]=$this->ventas_model->lista_clientes();
         $data["lista_empresas"]=$this->ventas_model->lista_empresas();
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
@@ -89,10 +92,11 @@ class Ventas extends CI_Controller {
         
         
         //$this->load->library('Funciones');
-        
+        print_r($_POST);die();
+
         $obj = new stdClass();
         $obj->empresa=$this->input->post('empresa');
-        $obj->proveedor=trim($this->input->post('cliente'));
+        $obj->cliente=trim($this->input->post('cliente'));
         $obj->factnro1=trim($this->input->post('factnro1'));
         $obj->factnro2=trim($this->input->post('factnro2'));
         $obj->fecha=$this->input->post('fecha');
@@ -111,7 +115,8 @@ class Ventas extends CI_Controller {
         $obj->obs=trim($this->input->post('obs'));
         $obj->items=trim($this->input->post('items'));
         
-        
+        print_r($obj);
+        die();
         ##Validar
         
         $error= new stdClass();
@@ -226,7 +231,16 @@ class Ventas extends CI_Controller {
         $this->load->view('ventas/facturas.php',$data);
     }
     
-}
-   
 
+    public function listar()
+    {
+       
+        $this->load->model('ventas_model');
+        $data["facturas"]=$this->ventas_model->listado("");
+        $this->load->view('encabezado.php');
+        $this->load->view('menu.php');
+      
+        $this->load->view('ventas/facturas.php',$data);
+    }
+}  
 ?>

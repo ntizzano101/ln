@@ -99,7 +99,7 @@ $route['ventas'] = 'ventas';
 $route['ventas/ingresar'] = 'ventas/ingresar';
 $route['ventas/borrar'] = 'ventas/borrar';
 $route['ventas/ver'] = 'vetnas/ver';
-$route['ventas/listar'] = 'vetnas/listar';
+$route['ventas/listar'] = 'ventas/listar';
 //TABLERO
 
 //*******ROUTES CURSOS*************

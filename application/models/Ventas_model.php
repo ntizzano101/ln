@@ -11,7 +11,7 @@ class Ventas_model extends CI_Model {
     
     public function lista_clientes()
         {
-            $sql="SELECT id, cliente FROM clientes";
+            $sql="SELECT id, cliente FROM clientes order by cliente";
             $retorno=$this->db->query($sql)->result();
             return $retorno;
         } 
@@ -23,13 +23,13 @@ class Ventas_model extends CI_Model {
             return $retorno;
         }     
         
-    public function lista_comprobantes($id_empresa,$id_proveedor)
-        {
-            $sql="SELECT DISTINCT id, cod_afip, cod_afip_t FROM cod_afip".
+    public function lista_comprobantes($id_empresa,$id_cliente)
+        {           
+            $sql="SELECT DISTINCT id, cod_afip, cod_afip_t,cod_afip.nombre FROM cod_afip".
             " WHERE id_iva=(SELECT cond_iva FROM empresas WHERE id_empresa=?)".
-            " AND id_iva_compra=(SELECT iva FROM proveedores WHERE id=?)".
+            " AND id_iva_compra=(SELECT iva FROM clientes WHERE id=?)".
             "  ORDER BY cod_afip";
-            $retorno=$this->db->query($sql, array($id_empresa, $id_proveedor))->result();
+            $retorno=$this->db->query($sql, array($id_empresa, $id_cliente))->result();
             return $retorno;
         }    
         
@@ -71,7 +71,7 @@ class Ventas_model extends CI_Model {
         {
             $sql="SELECT a.id_factura AS id".
                 ", DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha".
-                ", b.proveedor".
+                ", b.cliente".
                 " FROM facturas a".
                 " INNER JOIN clientes b ON a.id_cliente=b.id".
                 " WHERE TRUE ";
