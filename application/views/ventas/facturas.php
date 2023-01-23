@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-primary">
-                <div class="panel-heading">Factura de Compras</div>
+                <div class="panel-heading">Ventas , Comprobantes </div>
                 <?php if(isset($mensaje)){?>
                 <div class="row">
                     <div class="col-md-12">
@@ -18,9 +18,9 @@
                 </div>
                 <?php }?>
                 <div class="panel-body">
-                    <a class="btn btn-primary" href="<?php echo base_url(); ?>facturas/ingresar">Nueva factura</a>
+                    <a class="btn btn-primary" href="<?php echo base_url(); ?>ventas/ingresar">Nueva Venta</a>
                     <br>
-                    <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>facturas/buscar">
+                    <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>ventas/buscar">
                     <input type="text" class="form-control" name="buscar" placeholder="Buscar..">
                     <button type="submit" class="btn btn-default">Buscar</button>								
                     </form>	
@@ -30,7 +30,7 @@
                   <thead>
                         <tr>
                           <th>Id</th>
-                          <th>Proveedor</th>
+                          <th>Cliente</th>
                           <th>Fecha</th>
                           <th>Acciones</th>
                         </tr>
@@ -40,7 +40,7 @@
                         foreach($facturas as $fact){ ?>	
                                 <tr>
                                     <td><?=$fact->id ?></td>
-                                    <td><?=$fact->proveedor ?></td>
+                                    <td><?=$fact->cliente ?></td>
                                     <td><?=$fact->fecha ?></td>
                                     <td>
                                         <a class="btn-default fa fa-eye" title="Ver" 
