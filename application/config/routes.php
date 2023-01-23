@@ -94,6 +94,12 @@ $route['facturas/ver'] = 'facturas/ver';
 #ROUTES PARA CUENTA CORRIENTE
 $route['ctacte/ctacte/(:num)'] = 'ctacte/ctacte/$1';
 
+#ROUTES PARA VENTAS  - CLIENTES
+$route['ventas'] = 'ventas';
+$route['ventas/ingresar'] = 'ventas/ingresar';
+$route['ventas/borrar'] = 'ventas/borrar';
+$route['ventas/ver'] = 'vetnas/ver';
+$route['ventas/listar'] = 'vetnas/listar';
 //TABLERO
 
 //*******ROUTES CURSOS*************
