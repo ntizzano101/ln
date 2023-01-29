@@ -220,13 +220,17 @@ class Ajax extends CI_Controller {
         $data = new stdClass();
         $combo=""; 
         foreach ($tipos as $tp) {
-            
-            $combo.='<option value="'.$tp->id.'">'.$tp->nombre.'</option>';
+              //Solo Para  LA NICOLEÑA  no va interno
+            if($tp->nombre=="Interno"){
+                if($empresa==2){
+                        $combo.='<option value="'.$tp->id.'">'.$tp->nombre.'</option>';
+                    }
+                }
+            else  {
+                $combo.='<option value="'.$tp->id.'">'.$tp->nombre.'</option>';
+            }
         }
-        //Solo Para  LA NICOLEÑA
-        if($empresa==2){$combo.='<option value="">I 00I INTERNO</option>'; }   
-        $combo.='<option value="">X 00X REMITO</option>';        
-        $combo.='<option value="">P 00P PRESUPUESTO</option>';        
+      
         if($combo==""){$combo='<option value="">Sin tipos de comprobante</option>';}       
         $data->combo= $combo;   
         $resp=json_decode(json_encode($data), true);
@@ -240,14 +244,13 @@ class Ajax extends CI_Controller {
          if($id>0){
              if($empresa==1){
                 //embotelladora
+                  if($id<900)
                     $rta=array("00003","00004","00005","00006","00007");
-             }
-             if($empresa==2){
-                //es en negro
-                $rta=array();
-             }
+                    
+             }             
              if($empresa==3){
-                $rta=array("00002");
+                if($id<900)   
+                        $rta=array("00002");
              }
 
          }
