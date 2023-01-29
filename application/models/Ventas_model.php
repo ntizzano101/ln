@@ -72,8 +72,12 @@ class Ventas_model extends CI_Model {
             $sql="SELECT a.id_factura AS id".
                 ", DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha".
                 ", b.cliente".
+                ", a.puerto,a.numero,a.total,a.codigo_comp,a.letra,c.nombre,e.datos,ca.id_tipo_comp,a.id_comp_asoc".
                 " FROM facturas a".
                 " INNER JOIN clientes b ON a.id_cliente=b.id".
+                " INNER JOIN empresas e ON a.id_empresa=e.id_empresa".
+                " INNER JOIN cod_afip ca ON ca.id=a.id_tipo_comp".
+                " LEFT JOIN (select distinct cod_afip_t,nombre from cod_afip) as  c on a.codigo_comp=c.cod_afip_t".
                 " WHERE TRUE ";
             
             
@@ -93,15 +97,13 @@ class Ventas_model extends CI_Model {
                     $sql.=" AND a.fecha=?";
                 }else{
                     $b="%".trim(strtoupper($b))."%";
-                    $sql.=" AND UPPER(b.cliente) LIKE ?";
+                    $sql.="  AND (UPPER(b.cliente) LIKE ? or  UPPER(e.datos) LIKE ?)";
                 }
-            }else{
-                $sql.=" AND FALSE";
             }
              
-            $sql.=" LIMIT 10";
+            $sql.="  order by a.fecha desc ,a.cliente ,a.puerto,a.numero,a.codigo_comp,a.letra LIMIT 50";
             
-            $retorno=$this->db->query($sql, array($b))->result();
+            $retorno=$this->db->query($sql, array($b,$b))->result();
             if((is_array($retorno))){
                 return $retorno;
             }
@@ -144,61 +146,85 @@ class Ventas_model extends CI_Model {
         if(!(is_numeric($obj->intConNoGrv))){$obj->intConNoGrv="0.00";}
         if(!(is_numeric($obj->intTotal))){$obj->intTotal="0.00";}
         
-        list($prM,$prA)= explode("/", $obj->periva);
+        //list($prM,$prA)= explode("/", $obj->periva);
         
         $mtz=array(
             $obj->fecha,    //0
-            $obj->factnro1,//1
-            $obj->factnro2,//2
-            $obj->cod_afip,//3
-            $obj->obs,//4
-            $obj->formaPago,//5
-            $obj->empresa,//6
-            
-            $obj->intImpNeto,//7
-            $obj->intIva,//8
-            $obj->intPerIngB,//9
-            $obj->intPerIva,//10
-            $obj->intPerGnc,//11
-            $obj->intPerStaFe,//12
-            $obj->intImpExto,//13
-            $obj->intConNoGrv,//14
-            $obj->intTotal,//15
-            
-            $usuario,//16
-            $obj->proveedor,//17
-            $prA.$prM,//18
-            $obj->items//19
+            $obj->factnro1,//1            
+            $obj->cod_afip,//2
+            $obj->obs,//3
+            $obj->formaPago,//4
+            $obj->empresa,//5            
+            $obj->intImpNeto,//6
+            $obj->intIva,//7
+            $obj->intPerIngB,//6
+            $obj->intPerIva,//9
+            $obj->intPerGnc,//10
+            $obj->intPerStaFe,//11
+            $obj->intImpExto,//12
+            $obj->intConNoGrv,//13
+            $obj->intTotal,//14            
+            $usuario,//15
+            $obj->cliente,//16
+            $obj->periva,//17
+            $obj->items//18
         );
         
-        $sql="CALL ingfacturaclie(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      
+        $sql="CALL ingfacturaclie(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $data= array();
         try{
         $retorno=$this->db->query($sql, $mtz);
         } catch (Exception $ex) {
             echo "error ". $ex." <br>";
-        }
-        
+        }        
         if($retorno){
             $data = $retorno->row_array();
             $retorno->free_result();
             $retorno->next_result();
         }
-        return $data;
-        
+            return $data;       
     } 
     
     public function borrar($id)
         {
-     /*   $retorno="";
+        $retorno="";
         $sql="DELETE FROM facturas WHERE id_factura=?";
         $this->db->query($sql, array($id));
         $sql="DELETE FROM factura_items WHERE id_factura=?";
         $this->db->query($sql, array($id));
         $retorno ="El artículos se ha eliminado con éxito";
+        return $retorno;          
+    } 
+    public function empresa($id){
+        $sql="SELECT e.razon_soc,e.direccion,e.localidad,e.telefono,e.provincia,e.cp,c.cond_iva,e.cuit,e.nro_iibb
+                FROM empresas e LEFT JOIN cdiva c on c.codigo=e.cond_iva
+                INNER JOIN facturas f on f.id_empresa=e.id_empresa                
+                WHERE f.id_factura=? LIMIT 1";  
+        $retorno= $this->db->query($sql, array($id))->result();
+        return $retorno[0];
+         
+     }
+    public function cliente($id){
+        $sql="SELECT e.cliente,e.domicilio,e.cuit,e.telefonos,c.cond_iva,e.iva ,e.dni
+                FROM clientes e LEFT JOIN cdiva c on c.codigo=iva
+                INNER JOIN facturas f on f.id_cliente=e.id
+                WHERE f.id_factura=? LIMIT 1";  
+        $retorno=$this->db->query($sql, array($id))->result();
+        return $retorno[0];
+     }
+     public function venta($id){
+        $sql="SELECT f.*,c.nombre_c               
+                FROM facturas f INNER JOIN cod_afip c on f.id_tipo_comp=c.id
+                WHERE f.id_factura=? LIMIT 1"  ;
+        $retorno=$this->db->query($sql, array($id))->result();
+        return $retorno[0];        
+     }
+     public function items($id){
+        $sql="SELECT i.* 
+                FROM  factura_items i where  id_factura=?"  ;
+        $retorno=$this->db->query($sql, array($id))->result();
         return $retorno;
-     */      
-        }  
-          
-}
+     }
+ }
 ?>

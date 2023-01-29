@@ -9,7 +9,11 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">Venta - Ingresar</div>
                 <div class="panel-body">
-                    <form role="search" method="POST" action="<?php echo base_url(); ?>ventas/grabar" onSubmit="habiliar()">
+                    <!--method="" action="<?php echo base_url(); ?>ventas/grabar" onSubmit="habiliar()"-->
+                    <div role="search">
+                          <div class="row" id="mensaje">
+
+                          </div>   
                         <div class="row">
                             <div class="col-md-6">
                                 
@@ -23,9 +27,8 @@
                                     </option>
                                 <?php }?>        
                                 </select>
-                                <div id="errEmp">
-                                    <small><font color="red">
-                                        <?php if (isset($error->empresa)){echo $error->empresa;}?> 
+                                <div>
+                                    <small><font color="red" id="errEmp">                                       
                                     </font></small>
                                 </div>                            
                             </div>                                                            
@@ -34,9 +37,8 @@
                                     <select name="cod_afip" id="cod_afip" class="form-control">
                                         <option value="">Seleccione un tipo de comprobante</option>
                                     </select>
-                                    <div id="errCod_afip">
-                                        <small><font color="red">
-                                            <?php if (isset($error->cod_afip)){echo $error->cod_afip;}?> 
+                                    <div>
+                                        <small><font color="red" id="errCod_afip">                                        
                                         </font></small>
                                     </div>
                             </div>
@@ -54,9 +56,8 @@
                                     </option>
                                 <?php }?>        
                                 </select>
-                                <div id="errProv">
-                                    <small><font color="red">
-                                        <?php if (isset($error->prov)){echo $error->prov;}?> 
+                                <div>
+                                    <small><font color="red" id="errCli">                                    
                                     </font></small>
                                 </div>                                  
                             </div>                            
@@ -64,38 +65,36 @@
                                         
                                             <label>Puerto</label>               
                                             <select name="factnro1" id="factnro1" class="form-control">
-                                            </select>                                            
+                                            </select> 
+                                            <div>
+                                                <small><font color="red" id="errPuerto">                                    
+                                                </font></small>
+                                </div>                                             
                             </div>                                                                    
                             <div class="col-md-3">            
                                         <label>Nro Comprobante</label>     
                                             <input type="text" name="factnro2" id="factnro2" 
-                                                value="<?=$factura->factnro2?>" class="form-control" readonly />
+                                             value="" class="form-control" readonly />
                                         
-                                        <div id="errFactnro">
-                                            <small><font color="red">
-                                                <?php if (isset($error->factnro)){echo $error->factnro;}?> 
-                                            </font></small>
-                                        </div>
+                                        
                             </div>  
                         </div>      
                         <div class="row">
                             <div class="col-md-6">            
                                     <label for="fecha">Fecha</label>
                                     <input type="date" name="fecha" id="fecha" 
-                                        value="<?=$factura->fecha?>" class="form-control"/> 
-                                    <div id="errFecha">
-                                        <small><font color="red">
-                                            <?php if (isset($error->fecha)){echo $error->fecha;}?> 
+                                        value="" class="form-control"/> 
+                                    <div>
+                                        <small><font color="red" id="errFecha">                                        
                                         </font></small>
                                     </div>
                                 </div>
                                 <div class="col-md-6">  
                                     <label for="Cuit">Cuit</label>
                                     <input type="text" name="cuit" id="cuit" class="form-control"
-                                        value="<?=$factura->cuit?>" readonly="readonly">   
-                                    <div id="errCuit">
-                                        <small><font color="red">
-                                            <?php if (isset($error->cuit)){echo $error->cuit;}?> 
+                                        value="" readonly="readonly">   
+                                    <div>
+                                        <small><font color="red" id="errCuit">                                        
                                         </font></small>
                                     </div>                                 
                                 </div>                               
@@ -105,7 +104,12 @@
                                     <label for="cond">Condicion Frente al Iva</label>
                                     <input type="text" name="proviva" id="proviva" 
                                         value="" readonly="readonly"  class="form-control"/>                                     
-                                </div>
+                                    <div>
+                                        <small><font color="red" id="proviva">                                        
+                                        </font></small>
+                                    </div>                                 
+                                        
+                            </div>
                                 <div class="col-md-6">  
                                     <label for="Direccion">Direccion</label>
                                     <input type="text" name="provdir" id="provdir" class="form-control"
@@ -189,9 +193,8 @@
                                            <?php if ($factura->formaPago=="1"){ echo " selected ";}?>     
                                             >Cuenta corriente</option>
                                     </select>
-                                    <div id="errFormaPago">
-                                        <small><font color="red">
-                                            <?php if (isset($error->formaPago)){echo $error->formaPago;}?> 
+                                    <div >
+                                        <small><font color="red" id="errFormaPago">                                        
                                         </font></small>
                                     </div>
                                 </div>
@@ -200,22 +203,14 @@
                             <div class="col-md-6">
                             <label for="intImpNeto">Importe Neto</label>
                             <input type="text" name="intImpNeto" id="intImpNeto" 
-                                value="<?=$factura->intImpNeto?>" class="form-control" readonly/>
-                            <div id="errIntImpNeto">
-                                <small><font color="red">
-                                    <?php if (isset($error->intImpNeto)){echo $error->intImpNeto;}?> 
-                                </font></small>
-                            </div>
+                                value="" class="form-control" readonly/>
+                            
                             <br> 
                             
                             <label for="intIva">IVA</label>
                             <input type="text" name="intIva" id="intIva" 
                                 value="<?=$factura->intIva?>" class="form-control" readonly/>
-                            <div id="errIntIva">
-                                <small><font color="red">
-                                    <?php if (isset($error->intIva)){echo $error->intIva;}?> 
-                                </font></small>
-                            </div>
+                            
                             <br>
                             <!--
                             <label for="intPerIngB">Percepción Ing. Brutos</label>
@@ -255,12 +250,8 @@
                             <br>
                             -->
                             <label for="intImpExto">Importe Exento</label>
-                            <input type="text" name="intImpExto" id="intImpExto" readonly="readonly" class="form-control"/>
-                            <div id="errIntImpExto">
-                                <small><font color="red">
-                                    <?php if (isset($error->errIntImpExto)){echo $error->errIntImpExto;}?> 
-                                </font></small>
-                            </div>
+                            <input type="text" name="intImpExto" id="intImpExto" value="<?=$factura->intImpExto?>" readonly="readonly" class="form-control"/>
+                            
                             <br>
                             <!--
                             <label for="intConNoGrv">Conc. no Gravados</label>
@@ -274,6 +265,11 @@
                                 -->
                             <label for="intTotal">Total</label>
                             <input type="text" name="intTotal" id="intTotal" value="0" readonly class="form-control"/>
+                            <div>
+                                <small><font color="red" id="errTotal">
+                                    
+                                </font></small>
+                            </div>
                             <br>
                             
                             </div>
@@ -292,9 +288,10 @@
                         <br><br>
                         
                         <input type="hidden" id="items" name="items" value='<?=$factura->items?>'>    
-                        <button type="submit" id="aceptar" class="btn btn-primary">Grabar</button>
+                        <button type="botton" id="aceptar" class="btn btn-primary" onclick="grabar()">Grabar</button>
+                        <a href="<?php echo base_url(); ?>/ventas/listar"  class="btn btn-primary">Volver</a>
                     
-                    </form>  
+                                </div>  
                 </div>
                         
                         
@@ -534,7 +531,14 @@ $(document).ready(function(){
     $("#intPerStaFe").keyup(function(){$("#errIntPerStaFe").html(""); calcTotal(); });
     $("#intImpExto").keyup(function(){$("#errIntConNoGrv").html(""); calcTotal(); });
     $("#intConNoGrv").change(function(){$("#errIntImpExto").html(""); calcTotal(); });
-    $("#aceptar").click(function(){document.getElementById('empresa').disabled=false;document.getElementById('cliente').disabled=false;});
+    $("#intTotal").change(function(){$("#errIntTotal").html(""); calcTotal(); });
+    $("#aceptar").click(function(){
+        document.getElementById('empresa').disabled=false;
+        document.getElementById('cliente').disabled=false;
+        if(isNaN($("#intImpNeto").val())){$("#intImpNeto").val("0")}
+        if(isNaN($("#intIva").val())){$("#intIva").val("0")}
+        if(isNaN($("#intImpExto").val())){$("#intImpExto").val("0")}
+    });
     $("#bntIngItem").click(function(){
         if(!(isNaN($("#itemTotal").val()))){
             $.post(CFG.url + 'Ajax/carga_item/',
@@ -662,6 +666,59 @@ function habilitar(){
         document.getElementById('empresa').disabled=false;
         document.getElementById('cliente').disabled=false;
 }
-
+function grabar(){
+    proceso=true;    
+    $("#errEmp").html("");
+    $("#errCli").html("");
+    $("#errCod_afip").html("");
+    $("#errPuerto").html("");
+    $("#errFecha").html("");
+    $("#errTotal").html("");
+    $("#errFormaPago").html("");
+    if($("#empresa").val()==""){$("#errEmp").html("Seleccione Una Empresa");proceso=false;}
+    if($("#cliente").val()==""){$("#errCli").html("Seleccione Un Clente");proceso=false;}
+    if($("#cod_afip").val()==""){$("#errCod_afip").html("Seleccione Un Tipo De Comprobante");proceso=false;}
+    if(document.getElementById('factnro1').value==''){$("#errPuerto").html("Seleccione Un Puerto/Punto de Venta");proceso=false;}
+    if($("#fecha").val()==""  ||  $("#fecha").val().length!=10){$("#errFecha").html("Fecha Incorrecta");proceso=false;}
+    if($("#intTotal").val()=="0"  || $("#intTotal").val()==""){$("#errTotal").html("El Total No Puede Ser Cero");proceso=false;}
+    if($("#formaPago").val()==""){$("#errFormaPago").html("Seleccione Forma de Pago");proceso=false;}
+    if(proceso===true){
+        $.post(CFG.url + 'Ventas/grabar/',
+            {empresa:$('#empresa').val(),
+            cliente:$('#cliente').val(),
+            factnro1:$('#factnro1').val(),
+            factnro2:0,
+            fecha:$('#fecha').val(),            
+            cod_afip:$('#cod_afip').val(),
+            formaPago:$('#formaPago').val(),
+            intImpNeto:$('#intImpNeto').val(),
+            intIva:$('#intIva').val(),
+            intPerIngB:$('#intPerIngB').val(),
+            intPerIva:$('#intPerIva').val(),
+            intPerGnc:$('#intPerGnc').val(),
+            intPerStaFe:$('#intPerStaFe').val(),
+            intImpExto:$('#intImpExto').val(),
+            intConNoGrv:$('#intConNoGrv').val(),
+            intTotal:$('#intTotal').val(),
+            obs:$('#obs').val(),
+            cuit:$('#cuit').val(),
+            items:$('#items').val() } ,
+            function(data){
+            
+                    if(data.error==""){
+                        
+                        $("#factnro2").val(data.numero2);
+                        $('#empresa').val('');
+                        $('#cliente').val('');
+                    }
+                    else{
+                        $("#factnro2").val('');
+                    }
+                    $("#mensaje").html(data.mensaje);
+            });
+    }
+    else
+        return false;
+}
     
 </script>
