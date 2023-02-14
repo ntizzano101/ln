@@ -110,3 +110,9 @@ $route['cursos/editar/(:num)'] = 'Cursos_Controller/editar_curso/$1';
 $route['cursos/conf_eliminar/(:num)'] = 'Cursos_Controller/conf_eliminar_curso/$1';
 $route['cursos/eliminar/(:num)'] = 'Cursos_Controller/eliminar_curso/$1';
 */
+
+#ROUTES PARA RECIBO
+$route['recibo/recibo/(:num)'] = 'recibo/recibo/$1';
+
+#Clientes IVA
+$route['clientesIVA'] = 'clientesIVA';

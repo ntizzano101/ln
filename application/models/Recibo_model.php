@@ -1,5 +1,5 @@
 <?php
-class Ctacte_model extends CI_Model {
+class Recibo_model extends CI_Model {
     
     public function __construct()
     {
@@ -8,13 +8,13 @@ class Ctacte_model extends CI_Model {
     }
     
     //LISTADOS VARIOS
-     public function proveedor($id)
+     public function cliente($id)
         {
         $sql="SELECT a.*, d.cond_iva AS cdiva_nombre,".
             " IFNULL(b.razon_soc, '') AS empresa_nombre,".
             " IFNULL(c.etiqueta, '') AS etiqueta_nombre,".
             " DATE_FORMAT(a.baja, '%d/%m/%Y') AS fecha_baja".  
-            " FROM proveedores a".
+            " FROM clientes a".
             " LEFT JOIN empresas b ON a.id_empresa=b.id_empresa".
             " LEFT JOIN etiquetas c ON a.id_etiqueta=c.id".    
             " INNER JOIN cdiva d ON a.iva=d.codigo".    
@@ -24,21 +24,21 @@ class Ctacte_model extends CI_Model {
         return $retorno;
     } 
         
-    //CTA CTE   
-    public function listado($id_prov)
+    //cta_cte
+    public function cta_cte($id_clie)
         {
-            $sql="SELECT DATE_FORMAT(op.fecha,'%d/%m/%Y') AS fecha, op.id, op.total, 0 AS debe, 0 AS haber".
-                " FROM opago op".
-            " WHERE op.id_proveedor=?".	
+            $sql="SELECT DATE_FORMAT(rb.fecha,'%d/%m/%Y') AS fecha, rb.id, rb.total, 0 AS debe, 0 AS haber".
+                " FROM recibos rb".
+            " WHERE rb.id_cliente=?".	
             " UNION".
-            " SELECT DATE_FORMAT(fac.fecha,'%d/%m/%Y') AS fecha, fac.id_factura,".
-                " IF(cod.id_tipo_comp=3, fac.total , 0 ) AS total,".
-                " IF(cod.id_tipo_comp<>3, fac.total ,0 ) AS debe, 0 AS haber".
+            " SELECT DATE_FORMAT(fac.fecha,'%d/%m/%Y') AS fecha, fac.id_factura AS id,".
+                " IF(cod.id_tipo_comp=3, fac.total , 0) AS total,".
+                " IF(cod.id_tipo_comp<>3, fac.total , 0) AS debe, 0 AS haber".
             " FROM facturas fac".
-            " INNER JOIN cod_afip cod on fac.cod_afip = cod.cod_afip".
-            " WHERE fac.id_proveedor=?".
+                " INNER JOIN cod_afip cod on fac.cod_afip = cod.cod_afip".
+            " WHERE fac.id_cliente=?".
             " ORDER BY fecha";
-            $retorno=$this->db->query($sql, array($id_prov, $id_prov))->result();
+            $retorno=$this->db->query($sql, array($id_clie, $id_clie))->result();
             return $retorno;
         }        
           

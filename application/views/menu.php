@@ -38,7 +38,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contabilidad<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="<?=base_url()?>conceptos_caja/editar/">Plan De Cuentas</a></li>
-            <li><a href="<?=base_url()?>conceptos_caja/listado">Iva Ventas</a></li>		     
+            <li><a href="<?=base_url()?>clientesIVA">Iva Ventas</a></li>		     
             <li><a href="<?=base_url()?>movimientos_caja/listar">Iva Compras</a></li>
 						 <li><hr></li>
 			     <li><a href="<?=base_url()?>cierre_caja/verificar/">Posicion IVA</a></li>

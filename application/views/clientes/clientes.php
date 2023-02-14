@@ -52,6 +52,12 @@
                                         <a class="btn-default fa fa-pencil" title="Editar" 
                                             href="<?php echo base_url(); ?>clientes/editar/<?=$clie->id?>">  
                                         </a>
+                                        
+                                        &nbsp; &nbsp;
+                                        <a class="btn-default fa fa-book" title="Cta Cte" 
+                                            href="<?php echo base_url(); ?>recibo/cta_cte/<?=$clie->id?>">
+                                        </a>
+                                        
                                     <?php if (!($clie->baja)){ ?>
                                         &nbsp; &nbsp;
                                         <a class="btn-default fa fa-eraser" title="Borrar" 
