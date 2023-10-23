@@ -1,7 +1,7 @@
 reemplazar 
-COLLATE=utf8mb4_0900_ai_ci;
+utf8mb4_0900_ai_ci
 por 
-COLLATE=utf8mb4_general_ci;
+COLLATE=utf8mb4_general_ci
 reemplazar
 GET STACKED DIAGNOSTICS CONDITION 1
 por
