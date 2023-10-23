@@ -335,6 +335,7 @@
                         
                         <div class="row">
                             <label for="itemCod">Código</label>
+                            <input type="hidden" name="itemidArt" id="itemidArt" class="form-control"/>
                             <input type="text" name="itemCod" id="itemCod" class="form-control"/> 
                         </div>
 
@@ -394,12 +395,45 @@
         </div>
     </div>    
     
+    <!MODALS !>
+    <div class="modal fade" id="mdlOk">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title"></h1>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12">
+                        <label id="msjGuardado"></label>   
+                        Se Guardo El Comprobante
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-primary" data-dismiss="modal" 
+                onClick="window.location.href = CFG.url + 'Ventas/'">Ok</button>
+                
+                    
+                </a>
+            </div>
+
+          </div>
+        </div>
+    </div>    
     
+</div>
     
     
     
 </div>
-
+<p id="errores"></p>
 
 
 <script>
@@ -432,6 +466,7 @@ $(document).ready(function(){
         
     if($("#cliente").val()==="" || $("#empresa").val()===""){
         $("#cod_afip").html('<option value="">Sin tipos de comprobante</option>');
+        $("#factnro1").html('<option value="">Sin Puerto</option>');
     }else{
         $.post(CFG.url + 'Ajax/busca_tp_comprob_cl/',
         {proveedor:$("#cliente").val(),empresa:$("#empresa").val()},
@@ -461,6 +496,7 @@ $(document).ready(function(){
             });
         if($(this).val()==="" || $("#empresa").val()===""){
             $("#cod_afip").html('<option value="">Sin tipos de comprobante</option>');
+            $("#factnro1").html('<option value="">Sin Puerto</option>');
         }else{        
             $.post(CFG.url + 'Ajax/busca_tp_comprob_cl/',
             {cliente:$(this).val(),empresa:$("#empresa").val()},
@@ -471,7 +507,8 @@ $(document).ready(function(){
                 $.post(CFG.url + 'Ajax/busca_puertos/',
                      {id:$("#cod_afip").val(),empresa:$("#empresa").val()},
                      function(data){
-                      $("#factnro1").html(data.combo);              
+                      $("#factnro1").html(data.combo); 
+                      $("#errPuerto").html("");             
                 });     
             });
            
@@ -497,10 +534,10 @@ $(document).ready(function(){
     });
 
     $("#cod_afip").change(function(){
-        $("#factnro1").html("");
+        $("#factnro1").html("");   
         $.post(CFG.url + 'Ajax/busca_puertos/',
             {id:$(this).val(),empresa:$("#empresa").val()},
-            function(data){
+            function(data){                                  
                 $("#factnro1").html(data.combo);              
             });       
     });
@@ -547,6 +584,7 @@ $(document).ready(function(){
                 itemCant:$("#itemCant").val(),
                 itemPrcU:$("#itemPrcU").val(),
                 itemIva:$("#itemIva").val(),
+                itemidArt:$("#itemidArt").val(),
                 textIva:$("#itemIva option:selected").text(),
                 itemTotal:$("#itemTotal").val(),
                 items:$("#items").val()
@@ -573,6 +611,7 @@ $(document).ready(function(){
                 $("#itemCod").val(data.codigo);
                 $("#itemDesc").val(data.articulo);
                 $("#itemPrcU").val(data.precio1);
+                $("#itemidArt").val(data.id_art);
                 calcPrItem();
             });
          
@@ -582,6 +621,7 @@ $(document).ready(function(){
 
 
 function verMdItem(){
+    $("#itemidArt").val("");
     $("#itemCod").val("");
     $("#itemDesc").val("");
     $("#itemCant").val("");
@@ -600,6 +640,7 @@ function buscaItem(){
                 $("#itemCod").val(data.codigo);
                 $("#itemDesc").val(data.articulo);
                 $("#itemPrcU").val(data.precio1);
+                $("#itemidArt").val(data.id_art);
                 calcPrItem();
             });
 }
@@ -623,8 +664,9 @@ function calcPrItem(){
     precio=parseFloat($("#itemPrcU").val());
     iva=parseFloat($("#itemIva").val()) ;    
     total=cantidad * precio * (1 + iva);
-    if(isNaN(total)){$("#itemTotal").val("");}else{$("#itemTotal").val(total);}    
-    
+    if(isNaN(total))
+    {$("#itemTotal").val("");}
+    else{$("#itemTotal").val(total);}        
 }
 
 
@@ -648,7 +690,7 @@ function calcTotal(){
     if(!(isNaN(intImpExto))){total+=intImpExto;}
     if(!(isNaN(intConNoGrv))){total+=intConNoGrv;}
     
-    $("#intTotal").val(total);    
+    $("#intTotal").val(total.toFixed(2));    
     //Si el total no es cero entonces tengo que bloquar Empresa y Cliente
     if(total != 0.00){
         document.getElementById('empresa').disabled=true;
@@ -682,7 +724,7 @@ function grabar(){
     if($("#fecha").val()==""  ||  $("#fecha").val().length!=10){$("#errFecha").html("Fecha Incorrecta");proceso=false;}
     if($("#intTotal").val()=="0"  || $("#intTotal").val()==""){$("#errTotal").html("El Total No Puede Ser Cero");proceso=false;}
     if($("#formaPago").val()==""){$("#errFormaPago").html("Seleccione Forma de Pago");proceso=false;}
-    if(proceso===true){
+    if(proceso===true){             ;
         $.post(CFG.url + 'Ventas/grabar/',
             {empresa:$('#empresa').val(),
             cliente:$('#cliente').val(),
@@ -704,7 +746,8 @@ function grabar(){
             cuit:$('#cuit').val(),
             items:$('#items').val() } ,
             function(data){
-            
+                $('#errores').html('');
+                $('#errores').html(data);
                     if(data.error==""){
                         
                         $("#factnro2").val(data.numero2);
@@ -714,7 +757,9 @@ function grabar(){
                     else{
                         $("#factnro2").val('');
                     }
-                    $("#mensaje").html(data.mensaje);
+                    $("#mdlOk").modal("show");
+
+                    
             });
     }
     else

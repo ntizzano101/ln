@@ -52,42 +52,27 @@
                                     <td><?=$fact->id ?></td>
                                     <td><?=$fact->datos ?></td>
                                     <td><?=$fact->cliente ?></td>
-                                    <td><?=$fact->fecha ?></td>
-                                    <td><?php echo $fact->nombre . " " .  str_pad($fact->puerto,5,"0",STR_PAD_LEFT)."-".  str_pad($fact->numero,8,"0",STR_PAD_LEFT)  ?></td>
+                                    <td><?=$fact->fecha ?></td>                                    
+                                    <td><?php echo $fact->nombre . " " .  str_pad($fact->puerto,5,"0",STR_PAD_LEFT)."-".  str_pad($fact->numero,8,"0",STR_PAD_LEFT) ;  ?></td>                                    
                                     <td align="right"><?php printf("$ %0.2f", $fact->total * $mult) ?></td>
                                     <td>
                                         <a class="btn-default fa fa-eye" title="Ver Comprobante" 
                                             href="<?php echo base_url(); ?>ventas/comprobante/<?=$fact->id?>" target="blank_">
                                         </a>
-                                        
                                         &nbsp; &nbsp;
-                                        <?php if($fact->id_tipo_comp=='1' or $fact->id_tipo_comp=='2'){ 
-                                            if($fact->id_comp_asoc==0) { ?>
-                                            <a class="btn-default fa fa-money" title="Nota De Credito"
+                                        <a class="btn-default fa fa-exchange" title="Generar De Credito"
                                             onclick="verNC(<?=$fact->id?>, '<?=$fact->cliente?>')" >                              
-                                            </a>
-                                            <?php }else{ ?>
-                                                <a class="btn-default fa fa-eye" title="Ver NC" 
+                                            </a>                                        
+                                        &nbsp; &nbsp;
+                                        <a class="btn-default fa fa-money" title="Ver Comprobante Asociado" 
                                             href="<?php echo base_url(); ?>ventas/comprobante/<?=$fact->id_comp_asoc?>" target="blank_">
-                                        </a>
-
-                                            <?php } ?>
-                                        <?php } elseif($fact->id_tipo_comp=='5' and $fact->id_comp_asoc=='0')   { ?>    
+                                        </a> 
+                                        &nbsp; &nbsp;
                                         <a class="btn-default fa fa-eraser" title="Borrar" 
                                            onclick="verBorrar(<?=$fact->id?>, '<?=$fact->cliente?>')" >  
-                                        </a>                                                                               
-                                        <?php }   
-                                        elseif($fact->id_tipo_comp == '5' and $fact->id_comp_asoc >'0') { ?>    
-                                            <a class="btn-default fa fa-eye" title="Ver Comprobante" 
-                                            href="<?php echo base_url(); ?>ventas/comprobante/<?=$fact->id_comp_asoc?>" target="blank_">
-                                        </a>                                      
-                                        <?php } 
-                                        elseif($fact->id_tipo_comp == '3') { ?>    
-                                            <a class="btn-default fa fa-eye" title="Ver Factura Asociada" 
-                                            href="<?php echo base_url(); ?>ventas/comprobante/<?=$fact->id_comp_asoc?>" target="blank_">
-                                        </a>                                      
-                                        <?php } ?>
-                                     </td>
+                                        </a>                                              
+                                        </td>                                         
+                                     
                                 </tr>
                         <?php	
                         }
@@ -129,20 +114,68 @@
           </div>
         </div>
     </div>    
+    <!MODALS !>
+    <div class="modal fade" id="mdlError">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title">Error Al Procesar La Solicitud</h1>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12">
+                        <label id="msjError"></label>   
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">                
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>   
+                    
+                </a>
+            </div>
+
+          </div>
+        </div>
+    </div>  
     
 </div>
 
 <script>
-    
+
+var CFG = {
+        url: '<?php echo $this->config->item('base_url');?>',
+        token: '<?php echo $this->security->get_csrf_hash();?>'
+    };    
 $(document).ready(function(){
-    
+    $.ajaxSetup({data: {token: CFG.token}});
+    $(document).ajaxSuccess(function(e,x) {
+        var result = $.parseJSON(x.responseText);
+        $('input:hidden[name="token"]').val(result.token);
+        $.ajaxSetup({data: {token: result.token}});
+    });
     
 });
 
 function verBorrar(id,cliente){
-    $("#msjBorrar").html("¿Está seguro de borrar el comprobante "+ id + " del cliente " + cliente + " ?");
-    $("#hrefBorrar").attr("href","<?php echo base_url()?>ventas/borrar/" + id );
-    $("#mdlVerBorrar").modal("show");
+    $.post(CFG.url + 'Ajax/borrar_comprobante/',
+        {id:id},
+        function(data){         
+           if(data.mensaje!=""){
+                $("#msjError").html(data.mensaje);                
+                $("#mdlError").modal("show");
+           }
+           else{
+            $("#msjBorrar").html("¿Está seguro de borrar el comprobante ID:"+ id + " del Cliente : " + cliente + " ?");
+            $("#hrefBorrar").attr("href","<?php echo base_url()?>ventas/borrar/" + id );
+            $("#mdlVerBorrar").modal("show");
+
+           }
+        });
+  
 }
 
     

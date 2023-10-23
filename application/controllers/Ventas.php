@@ -114,9 +114,20 @@ class Ventas extends CI_Controller {
         $obj->intTotal=trim($this->input->post('intTotal'));
         $obj->obs=trim($this->input->post('obs'));
         $obj->cuit=trim($this->input->post('cuit'));
-        $obj->items=trim($this->input->post('items'));
-        
-      
+        $obj->items=trim($this->input->post('items'));       
+        $resultado=$this->ventas_model->guardar($obj);
+        $data["mensaje"]='<div class="alert alert-success alert-dismissible" role="alert">'.
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
+        '<span aria-hidden="true">&times;</span></button>'.
+        'La factura se ha ingresado con éxito'.
+        '</div>';
+        $data["numero2"]=$resultado;
+        $data["error"]="";
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp); 
+        return 0;
+        exit;
+       ///de aca para abajo no anda
         ##Validar
         
         $error= new stdClass();
