@@ -1,4 +1,7 @@
 <?php
+if($venta->cae==''){
+	die("<h3>Comprobante sin CAE no se puede Visualizar<hr>".$venta->cae_resultado."</h3>");
+}
 function fechaDBtoHtml($t){
 	list($ano,$mes,$dia)=explode("-",$t);
 	if($ano+$mes+$dia==0)
@@ -13,6 +16,7 @@ function fechaDBtoHtml($t){
 body{
 	font-family:verdana;
 	font-size:small;
+	
 }
 .tr1{
 
@@ -42,10 +46,18 @@ font-size:small;
 	<?php } ?>
 	</td>		
 	<td width="45%" align="right" valign="top">
-	    FECHA :<?=fechaDBtoHtml($venta->fecha) ?><br> 
-		<?=$venta->nombre_c?>:<?php printf("%05d-%08d",$venta->puerto,$venta->numero) ?><br>
+	<?=$venta->nombre_c?>:<?php printf("%05d-%08d",$venta->puerto,$venta->numero) ?><br>
+	    FECHA FACTURA  :<?=fechaDBtoHtml($venta->fecha) ?> <br>
+		<?php
+		if($venta->codigo_comp=='201'){ echo "VENCE:". fechaDBtoHtml($venta->vence) . "<br>";}		
+		?>
 		CUIT :<?=$empresa->cuit?><br>
 		IIBB :<?=$empresa->nro_iibb?><br>
+		SERVICIO DESDE : <?=fechaDBtoHtml($venta->serv_desde) ?><br> 
+		SERVICIO HASTA : <?=fechaDBtoHtml($venta->serv_hasta) ?><br>
+		<?php
+		if($venta->codigo_comp=='201'){ echo "CBU:". $venta->cbu . "<br>";}		
+		?>
 	</td>	
 </tr>
 <tr>
@@ -78,20 +90,26 @@ font-size:small;
 			<td  style="border:1px solid #000" >Cant.</td>	
 			<td  style="border:1px solid #000" colspan="4">Descripcion</td>	
 		<?php }  ?>
+		<?php if($venta->cae=="" or $venta->cae=="MIGRACION" ){echo "<tr><td colspan=5><h1>Comprobante de migarcion no Valido</h1></td></tr>";} ?>			
 		<?php foreach ($items as $it) { 
 			if($venta->letra!='R') {?>
 			<tr>		
 				<td ><?php echo $it->cantidad ?></td>
 				<?php if(($cliente->iva==1 or $cliente->iva==6) and ($venta->letra=='A' or $venta->letra=='P')) {?>
 				<td ><?php echo $it->articulo ?></td>
-				<td align="right"><?php echo $it->iva * 100 ?></td>
+				<td align="right"><?php 
+				if($it->tipo=="E"){echo "Exento";}
+				if($it->tipo=="N"){echo "No Grav.";}
+				if($it->tipo=="I"){echo  $it->iva;}
+				 ?></td>
 				<?php } 
 				else {
 				?>
 				<td colspan="2" ><?php echo $it->articulo ?></td>
 				<?php } ?>
 				<td align="right"><?php echo $it->precio ?></td>
-				<td align="right"><?php echo $it->precio *  $it->cantidad?></td>			
+				<td align="right"><?php 
+								printf("%.2f",$it->precio *  $it->cantidad)?></td>			
 			</tr>
 		<?php } else { ?>
 			<tr>		
@@ -110,13 +128,18 @@ font-size:small;
 			</tr>
 		<?php
 		}		
-		?>		
+		?>
+	
 	</table>
 	</td>
 	</tr>
 	<?php if(($cliente->iva==1 or $cliente->iva==6) and ($venta->letra=='A' or $venta->letra=='P')){ ?>
 		<tr>
-			<td width="80%" colspan="2" align="right">SUBTOTAL</td>			
+			<td width="80%" colspan="2" align="right">Importe Exento</td>			
+			<td width="20%" align="right"><b><?php echo $venta->excento?></b></td>
+		</tr>		
+		<tr>
+			<td width="80%" colspan="2" align="right">Importe Neto Gravado</td>			
 			<td width="20%" align="right"><b><?php echo $venta->neto ?></b></td>
 		</tr>		
 		<tr>
@@ -142,7 +165,7 @@ font-size:small;
 		</td>
 		</tr>	
 	<?php } ?>	
-	<?php if(in_array($venta->letra,array("A","B",))) { ?>
+	<?php if(in_array($venta->letra,array("A","B")) and is_numeric($venta->cae)) { ?>
 	<tr>
 			<td width="100%" colspan="10" align="center">
 				<table width="100%" align="center">
@@ -205,6 +228,7 @@ font-size:small;
 </tr>
 <?php } ?>
 </table>
+
 </center>	
 </body>
 </html>

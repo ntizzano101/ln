@@ -67,7 +67,7 @@ class Ventas_model extends CI_Model {
         
         
     //FACTURAS
-    public function listado($b)
+    public function listado($b,$c,$d)
         {
             $sql="SELECT a.id_factura AS id".
                 ", DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha".
@@ -81,7 +81,7 @@ class Ventas_model extends CI_Model {
                 " WHERE TRUE ";
             
             
-            if(trim($b) !=""){
+            /**if(trim($b) !=""){
                 $esFch=false;
                 if (substr_count($b,"/")==2){
                     list($dia,$mes,$anio)= explode("/",$b);
@@ -96,14 +96,16 @@ class Ventas_model extends CI_Model {
                 if($esFch){
                     $sql.=" AND a.fecha=?";
                 }else{
+             **/       
                     $b="%".trim(strtoupper($b))."%";
                     $sql.="  AND (UPPER(b.cliente) LIKE ? or  UPPER(e.datos) LIKE ?)";
-                }
-            }
-             
-            $sql.="  order by a.fecha desc ,a.cliente ,a.puerto,a.numero,a.codigo_comp,a.letra LIMIT 50";
+              //  }
+              
+            //}
+            $sql.="  AND a.fecha between ? and ? ";
+            $sql.="  order by a.fecha desc ,a.cliente ,a.puerto,a.numero,a.codigo_comp,a.letra LIMIT 100";
             
-            $retorno=$this->db->query($sql, array($b,$b))->result();
+            $retorno=$this->db->query($sql, array($b,$b,$c,$d))->result();
             if((is_array($retorno))){
                 return $retorno;
             }
@@ -131,60 +133,7 @@ class Ventas_model extends CI_Model {
         return $retorno;
         }    
     
-    public function guardar_SP($obj)
-        {
-        //$obj->periva=trim($this->input->post('periva'));Falta
-        //$usuario="21890143";
-        $usuario=$_SESSION["id"];
-        if(!(is_numeric($obj->intImpNeto))){$obj->intImpNeto="0.00";}
-        if(!(is_numeric($obj->intIva))){$obj->intIva="0.00";}
-        if(!(is_numeric($obj->intPerIngB))){$obj->intPerIngB="0.00";}
-        if(!(is_numeric($obj->intPerIva))){$obj->intPerIva="0.00";}
-        if(!(is_numeric($obj->intPerGnc))){$obj->intPerGnc="0.00";}
-        if(!(is_numeric($obj->intPerStaFe))){$obj->intPerStaFe="0.00";}
-        if(!(is_numeric($obj->intImpExto))){$obj->intImpExto="0.00";}
-        if(!(is_numeric($obj->intConNoGrv))){$obj->intConNoGrv="0.00";}
-        if(!(is_numeric($obj->intTotal))){$obj->intTotal="0.00";}
-        
-        //list($prM,$prA)= explode("/", $obj->periva);
-        
-        $mtz=array(
-            $obj->fecha,    //0
-            $obj->factnro1,//1            
-            $obj->cod_afip,//2
-            $obj->obs,//3
-            $obj->formaPago,//4
-            $obj->empresa,//5            
-            $obj->intImpNeto,//6
-            $obj->intIva,//7
-            $obj->intPerIngB,//6
-            $obj->intPerIva,//9
-            $obj->intPerGnc,//10
-            $obj->intPerStaFe,//11
-            $obj->intImpExto,//12
-            $obj->intConNoGrv,//13
-            $obj->intTotal,//14            
-            $usuario,//15
-            $obj->cliente,//16
-            $obj->periva,//17
-            $obj->items//18
-        );
-        
-      
-        $sql="CALL ingfacturaclie(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        $data= array();
-        try{
-        $retorno=$this->db->query($sql, $mtz);
-        } catch (Exception $ex) {
-            echo "error ". $ex." <br>";
-        }        
-        if($retorno){
-            $data = $retorno->row_array();
-            $retorno->free_result();
-            $retorno->next_result();
-        }
-            return $data;       
-    } 
+   
     
     public function borrar($id)
         {
@@ -214,7 +163,7 @@ class Ventas_model extends CI_Model {
         return $retorno[0];
      }
      public function venta($id){
-        $sql="SELECT f.*,c.nombre_c               
+        $sql="SELECT f.*,c.nombre_c,c.nombre               
                 FROM facturas f INNER JOIN cod_afip c on f.id_tipo_comp=c.id
                 WHERE f.id_factura=? LIMIT 1"  ;
         $retorno=$this->db->query($sql, array($id))->result();
@@ -226,6 +175,14 @@ class Ventas_model extends CI_Model {
         $retorno=$this->db->query($sql, array($id))->result();
         return $retorno;
      }
+
+     public function medio_pago($id){
+        $sql="SELECT i.mpago 
+                FROM  mpagos i where  id=?"  ;
+        $retorno=$this->db->query($sql, array($id))->row();
+        return $retorno;
+     }
+
 
     public function guardar($obj)
         {   
@@ -243,7 +200,7 @@ class Ventas_model extends CI_Model {
         $obj->periva=$ano.$mes;
         $items=json_decode($obj->items);          
         //guardo encabezado          
-        $sql="INSERT INTO FACTURAS(
+        $sql="INSERT INTO facturas(
             id_cliente, 
             fecha,
             puerto,
@@ -263,7 +220,12 @@ class Ventas_model extends CI_Model {
             excento,
             total,
             neto,
-            iva )VALUES(";        
+            iva,
+            serv_desde,
+            serv_hasta,
+            cbu,
+            id_comp_asoc,
+            vence )VALUES(";        
         $sql.="    ?,";  // id_cliente 1
         $sql.="    ?,";  //fecha 2
         $sql.="    ?,";  //puerto 3 
@@ -277,13 +239,18 @@ class Ventas_model extends CI_Model {
         $sql.="    (SELECT id_tipo_comp from cod_afip where id=? ),"; //11
         $sql.="    (SELECT cod_afip_t from cod_afip where id=?),";    //12      
         $sql.="    ?,"; // 13
-        $sql.="    (SELECT dni from clientes where id=?)"; //14
-        $sql.="    ,?"; //15
+        $sql.="    (SELECT dni from clientes where id=?),"; //14
+        $sql.="    (SELECT cliente from clientes where id=?)"; //14
         $sql.="    ,?"; //16 
         $sql.="    ,?"; //17 
         $sql.="    ,?";//18 
-        $sql.="    ,?"; //19 
-        $sql.="    ,?)";    //20               
+        $sql.="    ,?"; //19
+        $sql.="    ,?"; //20
+        $sql.="    ,?"; //21
+        $sql.="    ,?"; //22
+        $sql.="    ,(SELECT cbu from bancos where id=? )";  // 10 
+        $sql.="    ,?"; //24      
+        $sql.="    ,?)";    //25               
         $mtz=array();
         $mtz[]=$obj->cliente;
         $mtz[]=$obj->fecha;
@@ -304,9 +271,14 @@ class Ventas_model extends CI_Model {
         $mtz[]=$obj->intImpExto;
         $mtz[]=$obj->intTotal;
         $mtz[]=$obj->intImpNeto;
-        $mtz[]=$obj->intIva;                   
-        $this->db->query($sql, $mtz) ;
-        $last_id=$this->db->insert_id();
+        $mtz[]=$obj->intIva;   
+        $mtz[]=$obj->sdesde; 
+        $mtz[]=$obj->shasta; 
+        $mtz[]=$obj->cbu; 
+        $mtz[]=$obj->id_comp_asoc; 
+        $mtz[]=$obj->vence;         
+        $this->db->query($sql, $mtz);        
+        $last_id=$this->db->insert_id();        
         //Ahora los items 
         $neto21=0;
         $neto105=0;
@@ -317,7 +289,9 @@ class Ventas_model extends CI_Model {
         $neto=0;
         $iva=0;
         foreach($items as $x){
-             $x->iva=$x->iva*100;
+             if(is_numeric($x->iva))
+             {$x->iva=$x->iva*100;$x->tipo="I";}
+             else{$x->tipo=$x->iva;$x->iva=0;}
              if($x->iva==21){$neto21=$neto21+ $x->prcu * $x->cant;
                             $iva21=$iva21+($x->prcu * $x->cant)*0.21; }
              if($x->iva==10.5){$neto105=$neto105+$x->prcu * $x->cant; 
@@ -330,7 +304,7 @@ class Ventas_model extends CI_Model {
              $costo=0;
              if(count($a)>0)             
                 $costo=$a[0]["costo"];
-             $sql="INSERT INTO factura_items(id_factura,id_art,articulo,costo,precio,iva,cantidad,dto) values(?,?,?,?,?,?,?,?)";
+             $sql="INSERT INTO factura_items(id_factura,id_art,articulo,costo,precio,iva,cantidad,dto,tipo) values(?,?,?,?,?,?,?,?,?)";
              $mtz=array(
                 $last_id,
                 $x->id_art,
@@ -339,16 +313,16 @@ class Ventas_model extends CI_Model {
                 $x->prcu,
                 $x->iva,
                 $x->cant,
-                0
+                0,
+                $x->tipo
              );      
-            // echo $sql;
-            // print_r($mtz);die;
+         
              $this->db->query($sql, $mtz);
         }
         $iva=$iva21+$iva105;
         $neto=$neto21+$neto105;
         $total=$neto21+$neto105+$iva21+$iva105+$exento;    
-        $sql="UPDATE FACTURAS set 
+        $sql="UPDATE facturas set 
         total=?,
         excento=?,
         iva21=?,
@@ -376,6 +350,9 @@ class Ventas_model extends CI_Model {
         $a=$query->result();    
         if(in_array($a[0]->letra,array('A','B'))){
                 //dejo el numero en cero porque lo tiene que resolver Afip
+                
+
+
             }
             else
             {    
@@ -399,6 +376,11 @@ class Ventas_model extends CI_Model {
         $c=$this->db->query($sql,array($empresa,$id))->result();
         return($c);
     }  
+    public function buscar_comprobante($id)  {
+        $sql="select numero,id_factura from facturas where id_factura=?";
+        $c=$this->db->query($sql,array($id))->result();
+        return($c);
+    }  
     public function borrar_comprobante($id)  {
         $query = $this->db->get_where('facturas', array('id_factura' =>$id));
         $a=$query->result();
@@ -418,5 +400,40 @@ class Ventas_model extends CI_Model {
         }
       return($mensaje);  
     }  
+
+    public function validar_comprobante($id,$nro){
+        $sql="update  facturas set numero=? where id_factura=?";
+         $this->db->query($sql, array($nro,$id));
+    }
+
+    public function traigo_items_mod($idf){
+        $sql="select i.id, i.articulo, c.cliente, f.puerto , f.numero,f.letra,f.cod_afip 
+        from 
+        facturas f inner join factura_items i on f.id_factura=i.id_factura 
+        inner join clientes c on c.id=f.id_cliente where f.id_factura=?";
+         $rr=$this->db->query($sql, array($idf));        
+         return $rr->result();
+    }
+    public function busca_comp_asoc($cliente,$id){
+        $rta=$this->db->query("select cod_afip from cod_afip where id=?",$id)->result();
+        $v=$rta[0]->cod_afip;
+        $r="(0)";
+        if($v==3){$r="(1,2)";}    
+        if($v==13){$r="(11,12)";}            
+        if($v==203){$r="(201,202)";}        
+        $sql="select concat(DATE_FORMAT(fecha, '%d/%m/%Y'),' Nro',numero,' $',total) as mostrar,id_factura
+        from facturas where id_cliente=? and cod_afip in $r order by fecha desc limit 15";       
+        $rta=$this->db->query($sql,$cliente)->result();       
+        return($rta)    ;
+
+    }
+    
+    public function guardo_items_mod($i){       
+        foreach($i as $it){
+        $sql="update factura_items set articulo=? where id=?";
+           $this->db->query($sql, array($it->articulo,$it->id));       
+        } 
+       return "";
+    }
  }
 ?>

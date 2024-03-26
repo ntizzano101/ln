@@ -26,7 +26,7 @@ class Ajax extends CI_Controller {
         $combo=""; 
         foreach ($tipos as $tp) {
             
-            $combo.='<option value="'.$tp->id.'">'.$tp->cod_afip_t.'</option>';
+            $combo.='<option value="'.$tp->id.'">'.$tp->nombre.'</option>';
         }
         
         if ($combo==""){$combo='<option value="">Sin tipos de comprobante</option>';}
@@ -87,6 +87,7 @@ class Ajax extends CI_Controller {
         $textIva=$this->input->post('textIva');
         $itemidArt=$this->input->post('itemidArt');
         $itemTotal=$this->input->post('itemTotal');
+        $itemTipo=$this->input->post('itemTipo');
         $items=$this->input->post('items');
         
         $mtzItems= json_decode($items,true);
@@ -99,6 +100,7 @@ class Ajax extends CI_Controller {
         $fila["prcu"]=sprintf("%.2f",$itemPrcU);
         $fila["iva"]=$itemIva;
         $fila["txiva"]=$textIva;
+        $fila["tipo"]=$itemTipo;
         $fila["total"]=sprintf("%.2f",$itemTotal);
         
         array_push($mtzItems, $fila);
@@ -106,11 +108,11 @@ class Ajax extends CI_Controller {
         $data = new stdClass();
         $data->items= json_encode($mtzItems);
         
-        $i=0; $cpFl=""; $intImpNeto=0.00; $intIva=0.00;$intImpExto=0.00;
+        $i=0; $cpFl=""; $intImpNeto=0.00; $intIva=0.00;$intImpExto=0.00;$intImpNoGra=0.00;
         foreach ($mtzItems as $fl) {
             ++$i;
-            if($fl["txiva"]=="Exento"){
-                $fl["prcu"]=sprintf("%.2f",$fl["prcu"] * 1.21);
+            if($fl["iva"]=="E" or $fl["iva"]=="N" ){
+                $fl["prcu"]=sprintf("%.2f",$fl["prcu"] );
                 $fl["total"]=sprintf("%.2f",$fl["prcu"] * $fl["cant"]);
             }
             else 
@@ -127,19 +129,23 @@ class Ajax extends CI_Controller {
                     ' onclick="quitaItem('.$i.')">'.
                     "</td>".
                     "</tr>";
-            if($fl["txiva"]=="Exento"){
+            if($fl["iva"]=="E"){
                 $intImpExto+=$fl["cant"]*$fl["prcu"];
-            }   
-            else{     
+            }
+            if($fl["iva"]=="N"){
+                $intImpNoGra+=$fl["cant"]*$fl["prcu"];
+            }
+            if(is_numeric($fl["iva"])){     
                 $intImpNeto+=$fl["cant"]*$fl["prcu"];
                 $intIva+=$fl["cant"]*$fl["iva"]*$fl["prcu"];
                 }
-            }
+        }
         
         $data->cpFl= $cpFl;        
         $data->intImpNeto= sprintf("%.2f",$intImpNeto);
         $data->intImpExto= sprintf("%.2f",$intImpExto);
         $data->intIva= sprintf("%.2f",$intIva);
+        $data->intImpNoGra= sprintf("%.2f",$intImpNoGra);
         $resp=json_decode(json_encode($data), true);
         $this->send($resp);
     }
@@ -150,8 +156,9 @@ class Ajax extends CI_Controller {
         
         $mtzItems= json_decode($items,true);
         
-        $i=0; $cpFl=""; $intImpNeto=0.00; $intIva=0.00; $aux=array();
-        foreach ($mtzItems as $fl) {
+        $i=0; $cpFl=""; $intImpNeto=0.00; $intIva=0.00; $aux=array();$intImpExto=0.00; $intImpNoGra=0.00;
+        $intIva=0.00;
+        foreach ($mtzItems as $fl){
             if($fl["id"] <> $id){
                 ++$i;
                 $cpFl.="<tr>".
@@ -166,23 +173,32 @@ class Ajax extends CI_Controller {
                     ' onclick="quitaItem('.$i.')">'.
                     "</td>".
                     "</tr>";
-                $intImpNeto+=$fl["cant"]*$fl["prcu"];
-                $intIva+=$fl["cant"]*$fl["iva"]*$fl["prcu"];
-                $fl["id"]=$i;
-                array_push($aux, $fl);
+                
+                    if($fl["iva"]=="E"){
+                        $intImpExto+=$fl["cant"]*$fl["prcu"];
+                    }
+                    if($fl["iva"]=="N"){
+                        $intImpNoGra+=$fl["cant"]*$fl["prcu"];
+                    }
+                    if(is_numeric($fl["iva"])){     
+                        $intImpNeto+=$fl["cant"]*$fl["prcu"];
+                        $intIva+=$fl["cant"]*$fl["iva"]*$fl["prcu"];
+                        }
+                        array_push($aux, $fl);    
+                }
             }
-        }
-         
-        if($cpFl==""){$cpFl='<tr><td colspan="7" align="center" >Sin Items</td></tr>';}
-        
-        $data = new stdClass();
-        $data->items= json_encode($aux);    
-        
-        $data->cpFl= $cpFl;        
-        $data->intImpNeto= sprintf("%.2f",$intImpNeto);
-        $data->intIva= sprintf("%.2f",$intIva);
-        $resp=json_decode(json_encode($data), true);
-        $this->send($resp);
+            
+                if($cpFl==""){$cpFl='<tr><td colspan="7" align="center" >Sin Items</td></tr>';}
+               
+                $data = new stdClass();
+                $data->items= json_encode($aux);    
+                $data->cpFl= $cpFl;        
+                $data->intImpNeto= sprintf("%.2f",$intImpNeto);
+                $data->intImpExto= sprintf("%.2f",$intImpExto);
+                $data->intIva= sprintf("%.2f",$intIva);
+                $data->intImpNoGra= sprintf("%.2f",$intImpNoGra);
+                $resp=json_decode(json_encode($data), true);
+                $this->send($resp);     
     }
     
 
@@ -224,7 +240,21 @@ class Ajax extends CI_Controller {
         $resp=json_decode(json_encode($data), true);
         $this->send($resp);       
     }
+    public function busca_comp_asoc(){
+        $id=$this->input->post('id');
+        $cliente=$this->input->post('cliente');    
+        $this->load->model('ventas_model');               
+        $rta=$this->ventas_model->busca_comp_asoc($cliente,$id);
+        $combo='<option value="">NINGUNO</option>';
+        foreach($rta as $r){
+            $combo.='<option value="'.$r->id_factura.'">'.$r->mostrar.'</option>';
+        }
+        $data = new stdClass();
+        $data->combo=$combo;   
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp);     
 
+    }
     public function busca_puertos() {
          $id=$this->input->post('id');
          $empresa=$this->input->post('empresa');         
@@ -267,6 +297,48 @@ class Ajax extends CI_Controller {
        $this->send($resp);        
         
    }
+   public function comprobantecambiar() {
+        $id=$this->input->post('id');          
+        $this->load->model('ventas_model');           
+        $rta=$this->ventas_model->buscar_comprobante($id);  
+        $data = new stdClass();          
+        $data->numero= $rta[0]->numero;     
+        $data->id_factura= $rta[0]->id_factura; 
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp);            
+    }
+    public function validarnro() {
+        $id=$this->input->post('id');          
+        $numero=$this->input->post('numero');          
+        $data = new stdClass();       
+        if(!(is_numeric($numero) and $numero>0 and $numero < 99999999)){
+            $data->mensaje="El Valor $numero no es correcto";
+            $data->numero=0;
+        }
+        else{
+            $this->load->model('ventas_model');                                   
+            $a=$this->ventas_model->validar_comprobante($id,$numero);                                 
+            $fact=$this->ventas_model->venta($id);                                                             
+            $data->numero= $numero;
+            $data->id_factura=$fact->id_factura;                      
+            $data->renglon=$fact->nombre . " " .  str_pad($fact->puerto,5,"0",STR_PAD_LEFT)."-".  str_pad($fact->numero,8,"0",STR_PAD_LEFT) ;     
+            $data->mensaje='';
+        }                  
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp);            
+    } 
+
+   public function medio_pago() {
+                $id=$this->input->post('id');          
+                $this->load->model('ventas_model');           
+                $rta=$this->ventas_model->medio_pago($id);  
+                $data = new stdClass();       
+                $data->nombre= $rta;     
+                $resp=json_decode(json_encode($data), true);
+                $this->send($resp);        
+    
+}
+
    private function send($array) {
 
     if (!is_array($array)) return false;
@@ -282,5 +354,88 @@ class Ajax extends CI_Controller {
     exit(json_encode($send, JSON_FORCE_OBJECT));
 
 }
+   public function tablitaIva(){
+    $items=$this->input->post('items');        
+    $mtzItems= json_decode($items,true);   
+       $tabla=' 
+    <table class="table table-sm">
+    <thead>
+      <tr>
+        <th scope="col">Alicuota</th>
+        <th scope="col">Neto</th>
+        <th scope="col">Iva</th>                
+      </tr>
+    </thead>
+    <tbody>';
+    $rows="";
+    foreach($mtzItems as $it){
+        if(is_numeric($it["iva"])){
+            $neto=$it["cant"]*$it["prcu"];
+            $iva=$it["cant"]*$it["prcu"]*$it["iva"];
+            $texto=$it["txiva"];
+        $rows.="<tr>                
+                <td>$texto</td>
+                <td>$neto</td>
+                <td>$iva</td>
+            </tr>";
+        }
+     }
+   $tabla.=$rows.'
+    </tbody>
+  </table>';
+  $data = new stdClass();       
+  $data->tablita=$tabla;     
+  $resp=json_decode(json_encode($data), true);
+  $this->send($resp);     
+
+   } 
+
+  public function traerItems(){
+     $idf=   $items=$this->input->post('id');     
+     $idc=   $items=$this->input->post('cliente');     
+     $this->load->model('ventas_model');                
+     $rta=$this->ventas_model->traigo_items_mod($idf);  
+     $m="";
+     foreach($rta as $j){
+         $m.='<input type="text" maxlenght="50"  name="item_valor[]"  class="form-control" value="'.$j->articulo.'" >
+         <input type="hidden" maxlenght="50"  name="item_id[]" value="'.$j->id.'" >
+         <br>';
+     }     
+     $data = new stdClass();
+     $data->mensaje="";       
+     $data->nombre=""; 
+     $data->items=""; 
+     if(empty($rta)){
+        $data->mensaje="NO HAY ITEMS PARA MODIFICAR"; }
+     else{
+     $data->nombre= $rta[0]->cliente . " Comprobante Letra:" . $rta[0]->letra . " Cod:" . $rta[0]->cod_afip
+     . " Puerto:" . $rta[0]->puerto . " Nro:".$rta[0]->numero  ;     
+     $data->items=$m;
+     }
+     $resp=json_decode(json_encode($data), true);
+     $this->send($resp);        
+
+  }
+  public function cambioItems(){
+    $id=   $items=$this->input->post('id');     
+    $items=   $items=$this->input->post('items');        
+    $data = new stdClass();
+    $data->mensaje="";       
+    $data->nombre=""; 
+    $data->items=array();  
+    foreach($id as $k=>$v){     
+        $update  = new stdClass();
+        $update->id=$v;
+        $update->articulo=$items[$k];
+        $data->items[]=$update;
+    }   
+    $this->load->model('ventas_model');                
+    $rta=$this->ventas_model->guardo_items_mod($data->items);         
+    if(!empty($rta)){
+       $data->mensaje="ERROR"; }    
+    $resp=json_decode(json_encode($data), true);
+    $this->send($resp);        
+
+ }
 
 }

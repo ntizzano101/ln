@@ -35,7 +35,11 @@ class Ventas extends CI_Controller {
     {
        
         $this->load->model('ventas_model');
-        $data["facturas"]=$this->ventas_model->listado("");
+        $d=date("Y-m-d");
+        $data["facturas"]=$this->ventas_model->listado("",$d,$d);
+        $data["buscar"]="";
+        $data["fdesde"]=$d;
+        $data["fhasta"]=$d;
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('ventas/facturas.php',$data);
@@ -44,10 +48,23 @@ class Ventas extends CI_Controller {
     
     public function buscar()
     {
-       
+        $this->load->library('session');
+        $session=$this->session;
         $buscar=$this->input->post('buscar');
+        $fdesde=$this->input->post('fdesde'); 
+        if($session->has_userdata('fdesde')){$session->fdesde;}else{$fdesde=date("Y-m-d");}               
+        $fhasta=$this->input->post('fhasta');        
+        if($session->has_userdata('fhasta')){$session->fhasta;}else{$fhasta=date("Y-m-d");}       
         $this->load->model('ventas_model');
-        $data["facturas"]=$this->ventas_model->listado($buscar);
+        $data["facturas"]=$this->ventas_model->listado($buscar,$fdesde,$fhasta);
+        $data["fdesde"]=$fdesde;
+        $data["fhasta"]=$fhasta;
+        $newdata = [
+            'buscar'  => $buscar,
+            'fdesde'     => $fdesde,
+            'fhasta' => $fhasta
+        ];        
+        $session->set_userdata($newdata);
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('ventas/facturas.php',$data);
@@ -57,7 +74,7 @@ class Ventas extends CI_Controller {
     public function ingresar()
     {
         $this->load->model('ventas_model');
-        
+        $this->load->model('facturas_model');
         $obj = new stdClass();
         $obj->empresa="";
         $obj->cliente="";
@@ -76,12 +93,16 @@ class Ventas extends CI_Controller {
         $obj->intConNoGrv="";
         $obj->obs="";
         $obj->cuit="";
-        $obj->items="[]";
-        
+        $obj->items="[]";       
         
         $data["factura"]=$obj;
         $data["lista_clientes"]=$this->ventas_model->lista_clientes();
         $data["lista_empresas"]=$this->ventas_model->lista_empresas();
+        $bancos=$this->facturas_model->cmb_cbus();
+        $data["cbu"]=0;        
+        $comps_asoc=$this->facturas_model->cmb_comps_asoc(0,0);
+        $data["comps_asoc"]=$comps_asoc;
+        $data["bancos"]=$bancos;
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('ventas/facturas_grabar.php',$data);
@@ -89,11 +110,7 @@ class Ventas extends CI_Controller {
     
     public function grabar()
     {
-        $this->load->model('ventas_model');
-        
-        
-      
-
+        $this->load->model('ventas_model');        
         $obj = new stdClass();
         $obj->empresa=$this->input->post('empresa');
         $obj->cliente=trim($this->input->post('cliente'));
@@ -114,7 +131,12 @@ class Ventas extends CI_Controller {
         $obj->intTotal=trim($this->input->post('intTotal'));
         $obj->obs=trim($this->input->post('obs'));
         $obj->cuit=trim($this->input->post('cuit'));
+        $obj->cbu=trim($this->input->post('cbu'));
+        $obj->sdesde=trim($this->input->post('sdesde'));
+        $obj->shasta=trim($this->input->post('shasta'));      
+        $obj->id_comp_asoc=trim($this->input->post('id_comp_asoc'));
         $obj->items=trim($this->input->post('items'));       
+        $obj->vence=trim($this->input->post('vfecha'));       
         $resultado=$this->ventas_model->guardar($obj);
         $data["mensaje"]='<div class="alert alert-success alert-dismissible" role="alert">'.
         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
@@ -126,94 +148,7 @@ class Ventas extends CI_Controller {
         $resp=json_decode(json_encode($data), true);
         $this->send($resp); 
         return 0;
-        exit;
-       ///de aca para abajo no anda
-        ##Validar
-        
-        $error= new stdClass();
-        if($obj->empresa==""){$error->empresa="No puede estar vacío";}
-        if($obj->cliente==""){$error->prov="No puede estar vacío";}
-        if( !(is_numeric($obj->factnro1))){$error->factnro="Deben ser un número".$obj->factnro1;}
-        //if( !(is_numeric($obj->factnro2))){$error->factnro="Deben ser un número";}
-        if($obj->fecha==""){$error->fecha="No puede estar vacío";}
-       /* if($obj->periva==""){
-            $error->periva="No puede estar vacío";
-        }else{
-            if(strpos($obj->periva, "/")===false){
-                $error->periva="El separador debe ser /";
-            }else{
-                list($prM,$prA)= explode("/", $obj->periva);
-                if (!(is_numeric($prA))){
-                    $error->periva="El separador debe ser /";
-                }elseif ($prM < 1 || $prM > 12){
-                    $error->periva="El mes es incorrecto";
-                }elseif ($prA < date("Y") || ($prA == date("Y") && $prM < date("m") )  ){
-                    $error->periva="El período no puede ser menor al mes/año actual";
-                }
-            }
-        }*/
-        
-        if($obj->cod_afip==""){$error->cod_afip="No puede estar vacío";}
-        if($obj->formaPago==""){$error->formaPago="No puede estar vacío";}        
-        if(!(is_numeric($obj->intImpNeto))){$error->intImpNeto="Debe ser un número";$obj->intImpNeto=0;}
-        if(!(is_numeric($obj->intIva))){$error->intIva="Debe ser un número";$obj->intIva=0;}
-        if(!(is_numeric($obj->intImpExto))){$error->intImpExto="Debe ser un número";$obj->intImpExto=0;}
-        if($obj->intTotal != ($obj->intImpNeto + $obj->intIva + $obj->intImpExto)){$error->intTotal="La Suma de los importes no coresponde";}
-        if($obj->intTotal == 0){$error->intTotal="El Total No Puede Ser Cero";}
-        /*
-        if(!(is_numeric($obj->intPerIngB))){$error->intPerIngB="Debe ser un número";}
-        if(!(is_numeric($obj->intPerIva))){$error->intPerIva="Debe ser un número";}
-        if(!(is_numeric($obj->intPerGnc))){$error->intPerGnc="Debe ser un número";}
-        if(!(is_numeric($obj->intPerStaFe))){$error->intPerStaFe="Debe ser un número";}
-        */
-        
-        //if(!(is_numeric($obj->intConNoGrv))){$error->intConNoGrv="Debe ser un número";}
-        
-        
-        $falla=true; 
-        
-        //if(count((array)$error)==0){//Validacion OK
-        if(true){
-            $resultado=$this->ventas_model->guardar($obj);
-            if ($resultado["estado"]=="0"){
-                $falla=false;
-            }else{
-                $data["mensaje"]='<div class="alert alert-warning alert-dismissible" role="alert">'.
-                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
-                    '<span aria-hidden="true">&times;</span></button>'.
-                    $resultado["mensaje"].
-                    '</div>';
-                $data["numero2"]=0;    
-            }
-        }
-        
-        if($falla){
-            $data["factura"]=$obj;
-            $data["error"]=$error;
-            //$data["lista_clientes"]=$this->ventas_model->lista_clientes();
-            //$data["lista_empresas"]=$this->ventas_model->lista_empresas();
-            
-            //$this->load->view('encabezado.php');
-            //$this->load->view('menu.php');  
-            //$this->load->view('ventas/facturas_grabar.php',$data);
-        }else{
-            $data["mensaje"]='<div class="alert alert-success alert-dismissible" role="alert">'.
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
-                '<span aria-hidden="true">&times;</span></button>'.
-                'La factura se ha ingresado con éxito'.
-                '</div>';
-                $data["numero2"]=$resultado["numero2"];
-            $data["error"]="";
-           /* $data["facturas"]=$this->ventas_model->listado("");
-            $this->load->helper('url');
-            redirect('ventas/');
-            /*$this->load->view('encabezado.php');
-            $this->load->view('menu.php');
-            $this->load->view('ventas/facturas.php',$data);
-            */
-        }
-        $resp=json_decode(json_encode($data), true);
-        $this->send($resp);      
+        exit;            
         
     } 
     
@@ -246,9 +181,15 @@ class Ventas extends CI_Controller {
                 'La factura  no se pudo borrar. Consulte con al administrador del Sistema'.
                 '</div>';
         }
-        
-       
-        $data["facturas"]=$this->ventas_model->listado("");
+        $this->load->library('session');
+        $session=$this->session;
+        if($session->has_userdata('fdesde')){$fdesde=$session->fdesde;}else{$fdesde=date('Y-m-d');}
+        if($session->has_userdata('fhasta')){$fhasta=$session->fhasta;}else{$fhasta=date('Y-m-d');}
+        if($session->has_userdata('buscar')){$buscar=$session->buscar;}else{$buscar="";}
+        $data["facturas"]=$this->ventas_model->listado($buscar,$fdesde,$fhasta);
+        $data["buscar"]=$buscar;
+        $data["fdesde"]=$fdesde;
+        $data["fhasta"]=$fhasta;        
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('ventas/facturas.php',$data);
@@ -259,7 +200,18 @@ class Ventas extends CI_Controller {
     {
        
         $this->load->model('ventas_model');
-        $data["facturas"]=$this->ventas_model->listado("");
+        $this->load->library('session');
+        $session=$this->session;
+
+        $data["facturas"]=$this->ventas_model->listado("",date("Y-m-d"),date("Y-m-d"));
+        $data["fdesde"]=date("Y-m-d");
+        $data["fhasta"]=date("Y-m-d");
+        $newdata = [
+            'buscar'  => "",
+            'fdesde'     => date("Y-m-d"),
+            'fhasta' => date("Y-m-d")
+        ];        
+        $session->set_userdata($newdata);
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');      
         $this->load->view('ventas/facturas.php',$data);
@@ -292,5 +244,6 @@ class Ventas extends CI_Controller {
         $this->load->view('ventas/comprobante.php',$data);
 
     }
+    
 }  
 ?>
