@@ -186,6 +186,7 @@ class Facturas extends CI_Controller {
         if(!$falla){
             $resultado=$this->facturas_model->guardar($obj);
            /* if ($resultado["estado"]=="0"){
+            
                 $falla=false;
             }else{
                 $data["mensaje"]='<div class="alert alert-warning alert-dismissible" role="alert">'.
