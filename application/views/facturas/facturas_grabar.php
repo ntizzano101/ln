@@ -9,7 +9,7 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">Factura - Ingresar</div>
                 <div class="panel-body">
-                    <form role="search" method="POST" action="<?php echo base_url(); ?>facturas/grabar">
+                    <form role="search" method="POST"  action="<?php echo base_url(); ?>facturas/grabar">
                         <div class="row">
                             <div class="col-md-6">
                                 
@@ -93,7 +93,7 @@
                                     
                                 <label for="periva">Período de IVA</label>
                                 <input type="text" name="periva" id="periva" class="form-control"
-                                    value="<?=$factura->periva?>"   placeholder="mm/yyyy"/>   
+                                    value="<?=$factura->periva?>"   placeholder="mm/yyyy"/>                                
                                 <div id="errPeriva">
                                     <small><font color="red">
                                         <?php if (isset($error->periva)){echo $error->periva;}?> 
@@ -115,8 +115,7 @@
                         </div>
                         
                         <br>
-                        <hr>  
-                        
+                        <hr>                         
                         <div id="tbFactura">
                             <input type=button id="btnVerMdItem" value="Nuevo item" onclick="verMdItem()" />
                             <table class="table table-striped">
@@ -145,7 +144,7 @@
                                         <td><?=$un_item["desc"]?>
                                         <td><?=$un_item["cant"]?>
                                         <td><?=$un_item["prcu"]?>
-                                        <td><?=$un_item["iva"]?>
+                                        <td><?=$un_item["txiva"]?>
                                         <td><?=$un_item["total"]?>
                                         <td><a class="btn-default fa fa-eraser" title="Borrar"
                                             onclick="quitaItem(<?=$i?>)">
@@ -169,7 +168,11 @@
                             </table>
                             
                         </div>
-                        
+                        <div id="errItems">
+                                    <small><font color="red">
+                                        <?php if (isset($error->intItems)){echo $error->intItems;}?> 
+                                    </font></small>
+                                </div>      
                         <br>
                         <hr>  
                         
@@ -183,7 +186,7 @@
                                             >Seleccione una forma de pago</option>
                                         <option value="0" 
                                             <?php if ($factura->formaPago=="0"){ echo " selected ";}?>    
-                                            >Contado</option>
+                                            >Contado (Cancela Automaticamente en pesos)</option>
                                         <option value="1"
                                            <?php if ($factura->formaPago=="1"){ echo " selected ";}?>     
                                             >Cuenta corriente</option>
@@ -193,13 +196,16 @@
                                             <?php if (isset($error->formaPago)){echo $error->formaPago;}?> 
                                         </font></small>
                                     </div>
+                                    <div id="tablitaIva">
+
+                                   </div>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
-                            <label for="intImpNeto">Importe Neto</label>
-                            <input type="text" name="intImpNeto" id="intImpNeto" 
-                                value="<?=$factura->intImpNeto?>" class="form-control"/>
+                            <label for="intImpNeto">Importe Neto Gravado</label>
+                            <input type="text" name="intImpNeto" id="intImpNeto" readonly="readonly"
+                                value="<?= $factura->intImpNeto==''?'0':$factura->intImpNeto?>" class="form-control"/>
                             <div id="errIntImpNeto">
                                 <small><font color="red">
                                     <?php if (isset($error->intImpNeto)){echo $error->intImpNeto;}?> 
@@ -208,8 +214,8 @@
                             <br> 
                             
                             <label for="intIva">IVA</label>
-                            <input type="text" name="intIva" id="intIva" 
-                                value="<?=$factura->intIva?>" class="form-control"/>
+                            <input type="text" name="intIva" id="intIva" readonly="readonly"
+                                value="<?= $factura->intIva==''?'0':$factura->intIva ?>" class="form-control"/>
                             <div id="errIntIva">
                                 <small><font color="red">
                                     <?php if (isset($error->intIva)){echo $error->intIva;}?> 
@@ -218,7 +224,9 @@
                             <br>
                             
                             <label for="intPerIngB">Percepción Ing. Brutos</label>
-                            <input type="text" name="intPerIngB" id="intPerIngB" class="form-control"/>
+                            <input type="text" name="intPerIngB" 
+                            value="<?= $factura->intPerIngB==''?'0':$factura->intPerIngB ?>"
+                            id="intPerIngB" class="form-control"/>
                             <div id="errIntPerIngB">
                                 <small><font color="red">
                                     <?php if (isset($error->intPerIngB)){echo $error->intPerIngB;}?> 
@@ -227,7 +235,9 @@
                             <br>
                             
                             <label for="intPerIva">Percepción IVA</label>
-                            <input type="text" name="intPerIva" id="intPerIva" class="form-control"/>
+                            <input type="text" name="intPerIva" id="intPerIva" 
+                            value="<?= $factura->intPerIva==''?'0':$factura->intPerIva ?>"
+                            class="form-control"/>
                             <div id="errIntPerIva">
                                 <small><font color="red">
                                     <?php if (isset($error->intPerIva)){echo $error->intPerIva;}?> 
@@ -236,7 +246,9 @@
                             <br>
                             
                             <label for="intPerGnc">Percepción Ganancias</label>
-                            <input type="text" name="intPerGnc" id="intPerGnc" class="form-control"/>
+                            <input type="text" name="intPerGnc" 
+                            value="<?= $factura->intPerGnc==''?'0':$factura->intPerGnc ?>"
+                            id="intPerGnc" class="form-control"/>
                             <div id="errIntPerGnc">
                                 <small><font color="red">
                                     <?php if (isset($error->intPerGnc)){echo $error->intPerGnc;}?> 
@@ -245,7 +257,9 @@
                             <br>
                             
                             <label for="intPerStaFe">Percepción Santa Fé</label>
-                            <input type="text" name="intPerStaFe" id="intPerStaFe" class="form-control"/>
+                            <input type="text" name="intPerStaFe" 
+                            value="<?= $factura->intPerStaFe==''?'0':$factura->intPerStaFe ?>"
+                            id="intPerStaFe" class="form-control"/>
                             <div id="errIntPerStaFe">
                                 <small><font color="red">
                                     <?php if (isset($error->errIntPerStaFe)){echo $error->errIntPerStaFe;}?> 
@@ -253,8 +267,10 @@
                             </div>
                             <br>
                             
-                            <label for="intImpExto">Importe excento</label>
-                            <input type="text" name="intImpExto" id="intImpExto" class="form-control"/>
+                            <label for="intImpExto">Importe exento</label>
+                            <input type="text" name="intImpExto" id="intImpExto" readonly="readonly"
+                            value="<?= $factura->intImpExto==''?'0':$factura->intImpExto ?>"
+                            class="form-control"/>
                             <div id="errIntImpExto">
                                 <small><font color="red">
                                     <?php if (isset($error->errIntImpExto)){echo $error->errIntImpExto;}?> 
@@ -263,7 +279,9 @@
                             <br>
                             
                             <label for="intConNoGrv">Conc. no Gravados</label>
-                            <input type="text" name="intConNoGrv" id="intConNoGrv" class="form-control"/>
+                            <input type="text" name="intConNoGrv" id="intConNoGrv" readonly="readonly"
+                            value="<?= $factura->intConNoGrv==''?'0':$factura->intConNoGrv ?>"
+                            class="form-control"/>
                             <div id="errIntConNoGrv">
                                 <small><font color="red">
                                     <?php if (isset($error->intConNoGrv)){echo $error->intConNoGrv;}?> 
@@ -272,7 +290,7 @@
                             <br>
                             
                             <label for="intTotal">Total</label>
-                            <input type="text" name="intTotal" id="intTotal" class="form-control"/>
+                            <input type="text" name="intTotal" readonly="readonly" id="intTotal" class="form-control"/>
                             <br>
                             
                             </div>
@@ -291,7 +309,8 @@
                         <br><br>
                         
                         <input type="hidden" id="items" name="items" value='<?=$factura->items?>'>    
-                        <button type="submit" class="btn btn-primary">Grabar</button>
+                        <button type="submit" id="confirmar" class="btn btn-primary">Grabar</button>
+                        <button  id="comprobar" class="btn btn-warning">Comprobar</button>
                     
                     </form>  
                 </div>
@@ -358,18 +377,18 @@
                         <div class="row">
                             <label for="itemIva">IVA</label>
                             <select name="itemIva" id="itemIva" class="form-control">
-                                <option value="0" selected="true" >0003 (0%)</option>
-                                <option value="0.105">0004 (10.5%)</option>
-                                <option value="0.21">0005 (21%)</option>
-                                <option value="0.27">0006 (26%)</option>
-                                <option value="0.05">0008 (5%)</option>
-                                <option value="0.025">0009 (2.5%)</option>
+                                <option value="0" selected="true" >IVA (0%)</option>
+                                <option value="0.105">IVA (10.5%)</option>
+                                <option value="0.21">IVA (21%)</option>
+                                <option value="0.27">IVA (27%)</option>                        
+                                <option value="E">Exento</option>
+                                <option value="N">No Grav</option>
                             </select>
                         </div>
 
                         <div class="row">
                             <label for="itemTotal">Total</label>
-                            <input type="text" name="itemTotal" id="itemTotal" class="form-control"/> 
+                            <input type="text" name="itemTotal" readonly="readonly" id="itemTotal" class="form-control"/> 
                         </div>
                         
                     </div>
@@ -420,6 +439,8 @@ $(document).ready(function(){
     $('#factnro1').mask('9999');
     $('#factnro2').mask('99999999');
     $('#periva').mask('99/9999');
+    $('#confirmar').show();
+    $('#comprobar').hide();
     
     $.post(CFG.url + 'Ajax/busca_proveedor/',
         {id:$("#proveedor").val()},
@@ -457,7 +478,7 @@ $(document).ready(function(){
         }else{
             $.post(CFG.url + 'Ajax/busca_tp_comprob/',
             {proveedor:$(this).val(),empresa:$("#empresa").val()},
-            function(data){
+            function(data){               
                 $("#cod_afip").html(data.combo);
                 $("#errCod_afip").html("");
             });
@@ -523,6 +544,8 @@ $(document).ready(function(){
                     $("#cpFl").html(data.cpFl);
                     $("#intImpNeto").val(data.intImpNeto);
                     $("#intIva").val(data.intIva);
+                    $("#intImpExto").val(data.intImpExto);
+                    $("#intConNoGrv").val(data.intImpNoGra);
                     calcTotal();
                     $("#mdlItem").modal("hide");
                 });
@@ -543,7 +566,7 @@ $(document).ready(function(){
             });
          
     });
-    
+    calcTotal();  
 });
 
 
@@ -575,7 +598,7 @@ function quitaItem(id){
         {id:id,
         items:$("#items").val()
         },
-        function(data){
+        function(data){            
             $("#items").val(data.items);
             $("#cpFl").html(data.cpFl);
             $("#intImpNeto").val(data.intImpNeto);
@@ -587,8 +610,8 @@ function quitaItem(id){
 function calcPrItem(){
     cantidad=parseFloat($("#itemCant").val());
     precio=parseFloat($("#itemPrcU").val());
-    iva=parseFloat($("#itemIva").val()) ;    
-    total=cantidad * precio * (1 + iva);
+    //en items solo muestro neto , despues discirmino en otro lado...   
+    total=cantidad * precio ;
     if(isNaN(total)){$("#itemTotal").val("");}else{$("#itemTotal").val(total);}    
     
 }
@@ -616,7 +639,15 @@ function calcTotal(){
     if(!(isNaN(intConNoGrv))){total+=intConNoGrv;}
     
     $("#intTotal").val(total);    
-    
+    ///tablita de ivas
+    $.post(CFG.url + 'Ajax/tablitaIva/',
+            {items:$("#items").val()},
+            function(data){
+                $("#tablitaIva").html(data.tablita);       
+                
+            });
+
 }
-    
+
+
 </script>

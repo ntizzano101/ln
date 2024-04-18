@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ctacte extends CI_Controller {
+class Recibos extends CI_Controller {
 
     /**
      * Index Page for this controller.
@@ -38,55 +38,63 @@ class Ctacte extends CI_Controller {
     
     public function ctacte($id_prov)
     {
-        $this->load->model('ctacte_model');
-        $data["ctactes"]=$this->ctacte_model->listado($id_prov);
-        $data["proveedor"]=$this->ctacte_model->proveedor($id_prov);
+        $this->load->model('recibo_model');
+        $fdesde=$this->input->post('fdesde');
+        $fhasta=$this->input->post('fhasta');
+        $data["ctactes"]=$this->recibo_model->listado($id_prov);
+        $data["proveedor"]=$this->recibo_model->cliente($id_prov);        
+        if($fdesde==""){
+            $fecha = new DateTime();
+            $fecha->add(DateInterval::createFromDateString('-90 day'));
+            $fdesde=$fecha->format("Y-m-d");
+        }
+        if($fhasta==""){$fhasta=date('Y-m-d');}
+        $data["fdesde"]=$fdesde;
+        $data["fhasta"]=$fhasta;
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
-        $this->load->view('ctacte/ctacte.php',$data);
+        $this->load->view('recibos/ctacte.php',$data);
         
     }
     public function ctacteb($id,$id_prov)
     {
-        $this->load->model('ctacte_model');
-        $this->ctacte_model->borrar_opago($id,$id_prov);
-        $data["ctactes"]=$this->ctacte_model->listado($id_prov);
-        $data["proveedor"]=$this->ctacte_model->proveedor($id_prov);
+        $this->load->model('recibo_model');
+        $this->recibo_model->borrar_opago($id,$id_prov);
+        $data["ctactes"]=$this->recibo_model->listado($id_prov);
+        $data["proveedor"]=$this->recibo_model->cliente($id_prov);
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
-        $this->load->view('ctacte/ctacte.php',$data);
+        $this->load->view('recibos/ctacte.php',$data);
         
     }
     public function opago($id_prov)
     {
-        if(!isset($this->session->id_opago)){
-            $this->session->id_opago=rand(1,10000)*-1;             
+        if(!isset($this->session->id_recibo)){
+            $this->session->id_recibo=rand(1,10000)*-1;             
         }
-        $id_opago= $this->session->id_opago;
-        $this->load->model('ctacte_model');
-        $data["proveedor"]=$this->ctacte_model->proveedor($id_prov);
-        $data["deuda"]=$this->ctacte_model->comp_adeudados($id_prov);
-        $data["medios_de_pago"]=$this->ctacte_model->medios_pago($id_prov);
-        $this->load->model('facturas_model');
-        $data["lista_empresas"]=$this->facturas_model->lista_empresas(); 
-        $data["bancos"]=$this->ctacte_model->bancos();
+        $id_opago= $this->session->id_recibo;
+        $this->load->model('recibo_model');
+        $data["proveedor"]=$this->recibo_model->cliente($id_prov);
+        $data["deuda"]=$this->recibo_model->comp_adeudados($id_prov);
+        $data["medios_de_pago"]=$this->recibo_model->medios_pago($id_prov);
+        $data["bancos"]=$this->recibo_model->bancos();
         $data["id_opago"]=$id_opago;
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
-        $this->load->view('ctacte/opago.php',$data);
+        $this->load->view('recibos/opago.php',$data);
         
         
     }
     
     public function ingreso_pago_efectivo(){
-        $this->load->model('ctacte_model');
+        $this->load->model('recibo_model');
         $comentario=$this->input->post('comentario');
         $importe=floatval($this->input->post('importe'));
         $id_aux=$this->input->post('id_aux');
         $data = new stdClass();  
         $data->rta="";
         if($importe > -99999999999 and $importe < 99999999999 and $importe<>0){           
-             $x= $this->ctacte_model->ingreso_pago_efectivo($importe,$comentario,$id_aux);                            
+             $x= $this->recibo_model->ingreso_pago_efectivo($importe,$comentario,$id_aux);                            
              
         }
         else{$data->rta="Error importe invalido";}
@@ -95,11 +103,11 @@ class Ctacte extends CI_Controller {
         exit;
     }
     public function recalcular(){
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $id_aux=$this->input->post('id_aux');
         $data = new stdClass();  
         $data->tabla="";        
-        $x=$this->ctacte_model->recalcular($id_aux);                                             
+        $x=$this->recibo_model->recalcular($id_aux);                                             
         $t="";        
         $total=0;
         foreach($x as $y){          
@@ -117,7 +125,7 @@ class Ctacte extends CI_Controller {
         }                
         $fin="";
         if($t!=""){
-            $fin='<tr><td><button type="button" class="btn btn-success" onClick="guardar()">Finalizar OP</button>
+            $fin='<tr><td><button type="button" class="btn btn-success" onClick="guardar()">Finalizar Recibo</button>
             </td>
             <td colspan="7">
             <input type="hidden" id="total_fin" value="'.$total.'">                        
@@ -145,7 +153,7 @@ public function ingreso_pago_cheque3(){
     if(strlen($che3_nro)<5){$data->rta="Numero de Cheque No Valido";}
     if(strlen($che3_cliente)<5){$data->rta="Cliente del Cheque No Valido";}       
     if($data->rta==""){
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $cheque = new stdClass();
         $cheque->id=0;
         $cheque->numero=$che3_nro;
@@ -165,7 +173,7 @@ public function ingreso_pago_cheque3(){
         $ob2->id_medio_pago=2;
         $ob2->nro_comprobante='';
         $ob2->observaciones='';
-        $x=$this->ctacte_model->ingreso_pago_cheque3($cheque,$ob2);                                             
+        $x=$this->recibo_model->ingreso_pago_cheque3($cheque,$ob2);                                             
     }
     $resp=json_decode(json_encode($data), true);  
     $this->send($resp);     
@@ -173,7 +181,7 @@ public function ingreso_pago_cheque3(){
 }
 //cheque propio
 public function ingreso_pago_cheque(){
-    $this->load->model('ctacte_model');       
+    $this->load->model('recibo_model');       
     $id_aux=$this->input->post('id_aux');    
     $che_nro=$this->input->post('che_nro');    
     $che_banco=$this->input->post('che_banco');    
@@ -185,12 +193,12 @@ public function ingreso_pago_cheque(){
         $data->rta="Importe Del Cheque no es Valido";
     }
     if(strlen($che_nro)<5){$data->rta="Numero de Cheque No Valido";}
-    if($this->ctacte_model->verifico_numeracion($che_banco,$che_nro)>0){
+    if($this->recibo_model->verifico_numeracion($che_banco,$che_nro)>0){
         $data->rta="Numero de cheque repetido";
     }    
     if($che_fecha==""){$data->rta="Fecha Incorrecta";} 
     if($data->rta==""){
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $cheque = new stdClass();
         $cheque->id=0;
         $cheque->numero=$che_nro;
@@ -210,7 +218,7 @@ public function ingreso_pago_cheque(){
         $ob2->id_medio_pago=6;
         $ob2->nro_comprobante='';
         $ob2->observaciones='';
-        $x=$this->ctacte_model->ingreso_pago_cheque3($cheque,$ob2);                                             
+        $x=$this->recibo_model->ingreso_pago_cheque3($cheque,$ob2);                                             
     }
     $resp=json_decode(json_encode($data), true);  
     $this->send($resp);     
@@ -218,7 +226,7 @@ public function ingreso_pago_cheque(){
 }
 
 public function ingreso_pago_traf(){
-    $this->load->model('ctacte_model');       
+    $this->load->model('recibo_model');       
     $id_aux=$this->input->post('id_aux');    
     $tra_comp=$this->input->post('tra_comp');    
     $tra_banco=$this->input->post('tra_banco');        
@@ -230,7 +238,7 @@ public function ingreso_pago_traf(){
     }
     if(strlen($tra_comp)<5){$data->rta="Comprobante invalido +5 caracteres";}        
     if($data->rta==""){
-        $this->load->model('ctacte_model');               
+        $this->load->model('recibo_model');               
         $ob2 = new stdClass();  
         $ob2->id=0;
         $ob2->id_pago=$id_aux;
@@ -241,7 +249,7 @@ public function ingreso_pago_traf(){
         $ob2->id_medio_pago=9;
         $ob2->nro_comprobante='';
         $ob2->observaciones='';
-        $x=$this->ctacte_model->ingreso_pago_otro($ob2); 
+        $x=$this->recibo_model->ingreso_pago_otro($ob2); 
     }   
     $resp=json_decode(json_encode($data), true);  
     $this->send($resp);     
@@ -249,11 +257,13 @@ public function ingreso_pago_traf(){
 }
 
 public function ingreso_pago_otro(){
-    $this->load->model('ctacte_model');       
+    $this->load->model('recibo_model');       
     $id_aux=$this->input->post('id_aux');    
     $otr_comen=$this->input->post('otr_comen');        
     $otr_importe=$this->input->post('otr_importe');      
     $otr_tipo=$this->input->post('otr_tipo');      
+    $otr_fecha=$this->input->post('otr_fecha');      
+    $otr_comprobante=$this->input->post('otr_comprobante');      
     $data = new stdClass();   
     $data->rta="";    
     if(!(abs($otr_importe)< 9999999999 and $otr_importe!='' and $otr_importe!=0)){
@@ -261,7 +271,7 @@ public function ingreso_pago_otro(){
     }
     if(strlen($otr_comen)<5){$data->rta="Definicion no Valida para comentario  +5 caracteres";}        
     if($data->rta==""){
-        $this->load->model('ctacte_model');               
+        $this->load->model('recibo_model');               
         $ob2 = new stdClass();
         $ob2->id=0;
         $ob2->id_pago=$id_aux;
@@ -272,7 +282,9 @@ public function ingreso_pago_otro(){
         $ob2->id_medio_pago=$otr_tipo;
         $ob2->nro_comprobante=$otr_comen;
         $ob2->observaciones='';     
-        $x=$this->ctacte_model->ingreso_pago_otro($ob2); 
+        $ob2->rete_fecha=$otr_fecha;     
+        $ob2->nro_comprobante=$otr_comprobante;     
+        $x=$this->recibo_model->ingreso_pago_otro($ob2); 
     }   
     $resp=json_decode(json_encode($data), true);  
     $this->send($resp);     
@@ -282,41 +294,39 @@ public function ingreso_pago_otro(){
         $data = new stdClass();   
         $pago = new stdClass();   
         $data->rta="";     
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $id_aux=$this->input->post('id_aux');    
         $compro=$this->input->post('compro');        
         $id_proveedor=$this->input->post('id_proveedor');      
-        $empresa=$this->input->post('empresa');      
         $opagofecha=$this->input->post('opagofecha');      
-        $total_fin=(float)$this->input->post('total_fin');      
+        $total_fin=$this->input->post('total_fin');      
         $filas=explode(";",$compro);        
         $tpagado=0;
         //controlo cada factura
         foreach($filas as $fa){           
             $f=explode("_",$fa);
             //0->id comprobante //1->saldo adeudado //2-> es lo pagado
-            if(abs($f[1]) < abs($f[2])){$data->rta="no puede ingresar a pagar mas que el saldo ";}
-            $tpagado+=(float)$f[2];    
+            if(abs($f[1]) < abs($f[2])){$data->rta="no puede ingresar las que el saldo";}
+            $tpagado+=$f[2];    
             $factura = new stdClass();   
             $factura->id=0;
             $factura->id_op=0;
             $factura->id_factura=$f[0];
             $factura->monto=$f[2];
             $pago->facturas[]=$factura;
-        }
-		        $tpagado=round($tpagado,2);  										
+        }               
         //controlo que el total cancelando coincida
-        if($tpagado!=$total_fin){$data->rta="El Total cancelado ".$tpagado." debe coincidir con los Pagos " . $total_fin;}
+        if($tpagado!=$total_fin){$data->rta="El Total cancelado ".$tpagado." debe coincidir con los Pagos" . $total_fin;}
         if($opagofecha==""){$data->rta="La Fecha de la OP no puede ser vacia";}                          
         if($data->rta==""){                      
             $opago = new stdClass();   
             $opago->fecha=$opagofecha;
             $opago->id=0;
-            $opago->id_empresa=$empresa;
-            $opago->id_proveedor=$id_proveedor;
+            $opago->id_proveedor=0;
+            $opago->id_cliente=$id_proveedor;
             $opago->total=$total_fin;
             $pago->opago=$opago;               
-            $x=$this->ctacte_model->finalizar_opago($pago,$id_aux);
+            $x=$this->recibo_model->finalizar_opago($pago,$id_aux);
 
         }       
         $resp=json_decode(json_encode($data), true);  
@@ -324,17 +334,17 @@ public function ingreso_pago_otro(){
         exit;    
     }
     public function borro_opago_aux(){
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $id_aux=$this->input->post('id_aux');        
-        $x=$this->ctacte_model->borro_opago_aux($id_aux);                                             
+        $x=$this->recibo_model->borro_opago_aux($id_aux);                                             
     }
     
     public function ver_opago(){
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $id=$this->input->post('id');
         $data = new stdClass();  
         $data->tabla="";              
-        $x=$this->ctacte_model->ver_opago($id);                                             
+        $x=$this->recibo_model->ver_opago($id);                                             
         $t="";        
         $total=0;
         //datos de la op               
@@ -345,7 +355,7 @@ public function ingreso_pago_otro(){
              <td>'.$y->letra.'('.$y->codigo_comp .')'. $y->puerto. '-'. $y->numero .' </td>';
             if($y->monto > 0 ) {$t=$t.'<td>0</td><td>'.$y->monto.'</td>';}
             else{$t=$t.'<td>'.abs($y->monto).'</td><td>0</td>';}            
-             $t=$t.'<td>'.$total.'</td></tr>';
+             $t=$t.'<td>'.round($total,2).'</td></tr>';
         }     
         foreach($x->opago_pagos as $y){          
             $total=$total-$y->monto;
@@ -353,9 +363,9 @@ public function ingreso_pago_otro(){
              <td colspan="2">'.$y->mpago.' </td>';
             if($y->monto < 0 ) {$t=$t.'<td>0</td><td>'.$y->monto.'</td>';}
             else{$t=$t.'<td>'.abs($y->monto).'</td><td>0</td>';}            
-             $t=$t.'<td>'.$total.'</td></tr>';
+             $t=$t.'<td>'.round($total,2).'</td></tr>';
         }
-        $t=$t.'<tr><td colspan="3">Orden de Pago Nro.'.$x->opago[0]->id.'</td>
+        $t=$t.'<tr><td colspan="3">Recibo Nro.'.$x->opago[0]->id.'</td>
         <td colspan="2">Fecha.'.$x->opago[0]->fecha.'</td>
         </tr>';          
         $data->tabla=$t;
@@ -364,13 +374,13 @@ public function ingreso_pago_otro(){
         exit;
     }
     public function ver_factura_compra(){
-        $this->load->model('ctacte_model');       
+        $this->load->model('recibo_model');       
         $id=$this->input->post('id');
         $data = new stdClass();  
         $data->tabla="";              
-        $x=$this->ctacte_model->ver_factura_compra($id);                                                             
+        $x=$this->recibo_model->ver_factura_compra($id);                                                           
         $t="<p><strong>Factura</strong> ".$x->fac[0]->letra ."(".$x->fac[0]->codigo_comp.") " .$x->fac[0]->puerto. " - " .$x->fac[0]->numero ."</p>";  
-        $t=$t."<p><strong>Proveedor</strong> ".$x->fac[0]->proveedor."</p>";  
+        $t=$t."<p><strong>Cliente</strong> ".$x->fac[0]->cliente."</p>";  
         $t=$t."<p><strong>CUIT</strong> ".$x->fac[0]->cuit."</p>";  
         $t=$t."<p><strong>TOTAL</strong> ".$x->fac[0]->total."</p>";  
         $data->tabla=$t;

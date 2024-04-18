@@ -1,4 +1,7 @@
 <?php
+if($venta->cae==''){
+	die("<h3>Comprobante sin CAE no se puede Visualizar<hr>".$venta->cae_resultado."</h3>");
+}
 function fechaDBtoHtml($t){
 	list($ano,$mes,$dia)=explode("-",$t);
 	if($ano+$mes+$dia==0)
@@ -13,6 +16,7 @@ function fechaDBtoHtml($t){
 body{
 	font-family:verdana;
 	font-size:small;
+	
 }
 .tr1{
 
@@ -42,10 +46,18 @@ font-size:small;
 	<?php } ?>
 	</td>		
 	<td width="45%" align="right" valign="top">
-	    FECHA :<?=fechaDBtoHtml($venta->fecha) ?><br> 
-		<?=$venta->nombre_c?>:<?php printf("%05d-%08d",$venta->puerto,$venta->numero) ?><br>
+	<?=$venta->nombre_c?>:<?php printf("%05d-%08d",$venta->puerto,$venta->numero) ?><br>
+	    FECHA FACTURA  :<?=fechaDBtoHtml($venta->fecha) ?> <br>
+		<?php
+		if($venta->codigo_comp=='201'){ echo "VENCE:". fechaDBtoHtml($venta->vence) . "<br>";}		
+		?>
 		CUIT :<?=$empresa->cuit?><br>
 		IIBB :<?=$empresa->nro_iibb?><br>
+		SERVICIO DESDE : <?=fechaDBtoHtml($venta->serv_desde) ?><br> 
+		SERVICIO HASTA : <?=fechaDBtoHtml($venta->serv_hasta) ?><br>
+		<?php
+		if($venta->codigo_comp=='201'){ echo "CBU:". $venta->cbu . "<br>";}		
+		?>
 	</td>	
 </tr>
 <tr>
@@ -78,20 +90,27 @@ font-size:small;
 			<td  style="border:1px solid #000" >Cant.</td>	
 			<td  style="border:1px solid #000" colspan="4">Descripcion</td>	
 		<?php }  ?>
+		<?php if($venta->cae=="" or $venta->cae=="MIGRACION" ){echo "<tr><td colspan=5><h1>Comprobante de migarcion no Valido</h1></td></tr>";} ?>			
+		<?php if($venta->cae=="" or $venta->cae=="MANUAL" ){echo "<tr><td colspan=5><h1>NO VALIDO COMO FACTURA,ES UNA COPIA</h1></td></tr>";} ?>			
 		<?php foreach ($items as $it) { 
 			if($venta->letra!='R') {?>
 			<tr>		
 				<td ><?php echo $it->cantidad ?></td>
 				<?php if(($cliente->iva==1 or $cliente->iva==6) and ($venta->letra=='A' or $venta->letra=='P')) {?>
 				<td ><?php echo $it->articulo ?></td>
-				<td align="right"><?php echo $it->iva * 100 ?></td>
+				<td align="right"><?php 
+				if($it->tipo=="E"){echo "Exento";}
+				if($it->tipo=="N"){echo "No Grav.";}
+				if($it->tipo=="I"){echo  $it->iva;}
+				 ?></td>
 				<?php } 
 				else {
 				?>
 				<td colspan="2" ><?php echo $it->articulo ?></td>
 				<?php } ?>
 				<td align="right"><?php echo $it->precio ?></td>
-				<td align="right"><?php echo $it->precio *  $it->cantidad?></td>			
+				<td align="right"><?php 
+								printf("%.2f",$it->precio *  $it->cantidad)?></td>			
 			</tr>
 		<?php } else { ?>
 			<tr>		
@@ -110,13 +129,18 @@ font-size:small;
 			</tr>
 		<?php
 		}		
-		?>		
+		?>
+	
 	</table>
 	</td>
 	</tr>
 	<?php if(($cliente->iva==1 or $cliente->iva==6) and ($venta->letra=='A' or $venta->letra=='P')){ ?>
 		<tr>
-			<td width="80%" colspan="2" align="right">SUBTOTAL</td>			
+			<td width="80%" colspan="2" align="right">Importe Exento</td>			
+			<td width="20%" align="right"><b><?php echo $venta->excento?></b></td>
+		</tr>		
+		<tr>
+			<td width="80%" colspan="2" align="right">Importe Neto Gravado</td>			
 			<td width="20%" align="right"><b><?php echo $venta->neto ?></b></td>
 		</tr>		
 		<tr>
@@ -142,7 +166,7 @@ font-size:small;
 		</td>
 		</tr>	
 	<?php } ?>	
-	<?php if(in_array($venta->letra,array("A","B",))) { ?>
+	<?php if(in_array($venta->letra,array("A","B")) and is_numeric($venta->cae)) { ?>
 	<tr>
 			<td width="100%" colspan="10" align="center">
 				<table width="100%" align="center">
@@ -157,15 +181,15 @@ font-size:small;
 							//fecha 	full-date (RFC3339) 	OBLIGATORIO – Fecha de emisión del comprobante 	"2020-10-13"
 							$qr1["fecha"]=$venta->fecha;
 							//cuit 	Numérico 11 dígitos 	OBLIGATORIO – Cuit del Emisor del comprobante 	30000000007
-							$qr1["cuit"]=$empresa->cuit;
+							$qr1["cuit"]=(float)$empresa->cuit;
 							//ptoVta 	Numérico hasta 5 digitos 	OBLIGATORIO – Punto de venta utilizado para emitir el comprobante 	10
-							$qr1["ptoVta"]=$venta->puerto; //Sori Pero lo tengo HArdoce DAMASO;
+							$qr1["ptoVta"]=(int)$venta->puerto; //Sori Pero lo tengo HArdoce DAMASO;
 							//tipoCmp 	Numérico hasta 3 dígitos 	OBLIGATORIO – tipo de comprobante (según Tablas del sistema ) 	1
-							$qr1["tipoCmp"]=$venta->cod_afip;
+							$qr1["tipoCmp"]=(int)$venta->cod_afip;
 							//nroCmp 	Numérico hasta 8 dígitos 	OBLIGATORIO – Número del comprobante 	94
-							$qr1["nroCmp"]=$venta->numero;
+							$qr1["nroCmp"]=(int)$venta->numero;
 							//importe 	Decimal hasta 13 enteros y 2 decimales 	OBLIGATORIO – Importe Total del comprobante (en la moneda en la que fue emitido) 	12100
-							$qr1["importe"]=$venta->total;
+							$qr1["importe"]=(float)$venta->total;
 							//moneda 	3 caracteres 	OBLIGATORIO – Moneda del comprobante (según Tablas del sistema ) 	"DOL"
 							$qr1["moneda"]="PES";
 							//ctz 	Decimal hasta 13 enteros y 6 decimales 	OBLIGATORIO – Cotización en pesos argentinos de la moneda utilizada (1 cuando la moneda sea pesos) 	65
@@ -175,17 +199,17 @@ font-size:small;
 							//nroDocRec 	Numérico hasta 20 dígitos 	DE CORRESPONDER – Número de documento del receptor correspondiente al tipo de documento indicado 	20000000001
 							if($cliente->iva != 5)
 								{ 
-								$qr1["nroDocRec"]=$cliente->cuit;
+								$qr1["nroDocRec"]=(float) str_replace("-","",$cliente->cuit);
 								$qr1["tipoDocRec"]=80;
 								}
 							else{
-								$qr1["nroDocRec"]=$cliente->dni;	
+								$qr1["nroDocRec"]=(float)$cliente->dni;	
 								$qr1["tipoDocRec"]=96;
 								}
 							//tipoCodAut 	string 	OBLIGATORIO – “A” para comprobante autorizado por CAEA, “E” para comprobante autorizado por CAE 	"E"
 							$qr1["tipoCodAut"]="E";	
 							//codAut 	Numérico 14 dígitos 	OBLIGATORIO – Código de autorización otorgado por AFIP para el comprobante 	70417054367476
-							$qr1["codAut"]=$venta->cae;
+							$qr1["codAut"]=(float)$venta->cae;
 							$valor=json_encode($qr1);
 							$valor="https://www.afip.gob.ar/fe/qr/?p=" . base64_encode($valor);
 							?>
@@ -205,6 +229,7 @@ font-size:small;
 </tr>
 <?php } ?>
 </table>
+
 </center>	
 </body>
 </html>

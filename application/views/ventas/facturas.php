@@ -21,7 +21,9 @@
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>ventas/ingresar">Nueva Venta</a>
                     <br>
                     <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>ventas/buscar">
-                    <input type="text" class="form-control" name="buscar" placeholder="Buscar..">
+                    Cliente<input type="text" class="form-control" name="buscar" >
+                    Fecha Desde<input type="date" class="form-control" name="fdesde" value="<?=$fdesde?>">
+                    Fecha Hasta<input type="date" class="form-control" name="fhasta" value="<?=$fhasta?>">
                     <button type="submit" class="btn btn-default">Buscar</button>								
                     </form>	
                 </div>
@@ -53,7 +55,14 @@
                                     <td><?=$fact->datos ?></td>
                                     <td><?=$fact->cliente ?></td>
                                     <td><?=$fact->fecha ?></td>                                    
-                                    <td><?php echo $fact->nombre . " " .  str_pad($fact->puerto,5,"0",STR_PAD_LEFT)."-".  str_pad($fact->numero,8,"0",STR_PAD_LEFT) ;  ?></td>                                    
+                                    <?php 
+                                    //solo permitimos modificar carga manual de  facturas 
+                                    if($fact->cae=="MANUAL" and in_array($fact->letra,array("A","B","C"))){?>
+                                    <td><a href="#" id="renglon<?=$fact->id?>"  onClick="modificar_nro(<?=$fact->id?>)"><?php echo $fact->nombre . " " .  str_pad($fact->puerto,5,"0",STR_PAD_LEFT)."-".  str_pad($fact->numero,8,"0",STR_PAD_LEFT) ;  ?></a></td>                                    
+                                    <?php } 
+                                    else { ?>
+                                         <td><?php echo $fact->nombre . " " .  str_pad($fact->puerto,5,"0",STR_PAD_LEFT)."-".  str_pad($fact->numero,8,"0",STR_PAD_LEFT) ;  ?></td>                                        
+                                    <?php }?>    
                                     <td align="right"><?php printf("$ %0.2f", $fact->total * $mult) ?></td>
                                     <td>
                                         <a class="btn-default fa fa-eye" title="Ver Comprobante" 
@@ -70,6 +79,10 @@
                                         &nbsp; &nbsp;
                                         <a class="btn-default fa fa-eraser" title="Borrar" 
                                            onclick="verBorrar(<?=$fact->id?>, '<?=$fact->cliente?>')" >  
+                                        </a>    
+                                        &nbsp; &nbsp;
+                                        <a class="btn-default fa fa-edit" title="Modificar Items" 
+                                           onclick="verModi(<?=$fact->id?>, '<?=$fact->cliente?>')" >  
                                         </a>                                              
                                         </td>                                         
                                      
@@ -99,12 +112,10 @@
                         <label id="msjBorrar"></label>   
                         
                     </div>
-                </div>
+                </div>           
             </div>
-
             <!-- Modal footer -->
-            <div class="modal-footer">
-                
+            <div class="modal-footer">                
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                 <a class="btn btn-default btn-danger" id="hrefBorrar" href="">Borrar
                     
@@ -114,6 +125,75 @@
           </div>
         </div>
     </div>    
+    <!MODALS !>
+    <div class="modal fade" id="mdlCambioNro">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title">Cambiar Numeracion</h1>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12">
+                        <label id="msjNumeracion"></label>                           
+                    </div>
+                </div>
+                <div class="row">
+                        <label for="itemCod">Ingrese Nuevo Numero</label>                                                
+                        <input type="hidden" name="" value="" id="id_factura" class="form-control"/> 
+                        <input type="text" name="" id="nuevonro" class="form-control"/> 
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="bntCambioNro">Aceptar</button>
+            </div>
+
+          </div>
+        </div>
+    </div>    
+    <!MODALS !>
+    <!MODALS !>
+    <div class="modal fade" id="mdlCambioItems">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title">Modificar items de Factura</h1>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12">
+                        <label id="msjNumeracion"></label>                           
+                    </div>
+                </div>
+                <div class="row">
+                        <label for="itemCod" id="TituloFactura">Modifique Las Descripciones</label>                                                                        
+                        <input type="hidden" name="" value="" id="id_factura" class="form-control"/> 
+                        <div id="idItemsModif">
+                        </div>    
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="bntCambioItems">Aceptar</button>
+            </div>
+
+          </div>
+        </div>
+    </div>    
+    <!MODALS !>
     <!MODALS !>
     <div class="modal fade" id="mdlError">
         <div class="modal-dialog modal-lg">
@@ -157,7 +237,39 @@ $(document).ready(function(){
         $('input:hidden[name="token"]').val(result.token);
         $.ajaxSetup({data: {token: result.token}});
     });
-    
+   
+    $("#bntCambioNro").click(function(){                    
+        $.post(CFG.url + 'Ajax/validarnro/',
+        {id:$("#id_factura").val(),
+        numero:$("#nuevonro").val()},
+        function(data){                               
+            if(data.mensaje!=""){
+                $("#msjNumeracion").html(data.mensaje);                  
+           }
+           else{                  
+              $("#renglon"+data.id_factura).html(data.renglon);               
+              $("#mdlCambioNro").modal("hide");
+            }
+        });           
+    });                   
+    $("#bntCambioItems").click(function(){                
+        var a= new Array();
+        var b= new Array();
+        $('input[name^="item_valor"]').each(function() {
+            b.push($(this).val());            
+        });                 
+        $('input[name^="item_id"]').each(function() {
+            a.push($(this).val());            
+        });                 
+        $.post(CFG.url + 'Ajax/cambioItems/',
+        {   id:a,
+            items:b},
+        function(data){                                                   
+            $("#mdlCambioItems").modal("hide");            
+        });           
+    });               
+
+
 });
 
 function verBorrar(id,cliente){
@@ -175,8 +287,32 @@ function verBorrar(id,cliente){
 
            }
         });
-  
-}
+    }
+    function modificar_nro(id){
+    $.post(CFG.url + 'Ajax/comprobantecambiar/',
+        {id:id},
+        function(data){        
+              $("#id_factura").val(data.id_factura)  ;
+              $("#nuevonro").val(data.numero);      
+              $("#mdlCambioNro").modal("show");
+            }
+        );
+    } 
+   function verModi(idFac,idCli){
+    $.post(CFG.url + 'Ajax/traerItems/',
+        {id:idFac,
+        cliente:idCli},
+        function(data){              
+            if(data.mensaje!=""){
+                $("#msjError").html(data.mensaje);                
+                $("#mdlError").modal("show");
+           }
+           else{       
+              $("#idItemsModif").html(data.items);  
+              $("#TituloFactura").html(data.nombre) ;   
+              $("#mdlCambioItems").modal("show");
+            }
+        });
+    } 
 
-    
 </script>

@@ -21,9 +21,11 @@
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>facturas/ingresar">Nueva factura</a>
                     <br>
                     <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>facturas/buscar">
-                    <input type="text" class="form-control" name="buscar" placeholder="Buscar.."
+                    Proveedor<input type="text" class="form-control" name="buscar" placeholder="Buscar.."
                         value="<?php if (isset($_SESSION["flt_factura"])){echo $_SESSION["flt_factura"];}?>"      
-                    >
+                    >                    
+                    Fecha Desde<input type="date" class="form-control" name="fdesde" value="<?=$fdesde?>">
+                    Fecha Hasta<input type="date" class="form-control" name="fhasta" value="<?=$fhasta?>">
                     <button type="submit" class="btn btn-default">Buscar</button>								
                     </form>	
                 </div>
@@ -34,6 +36,10 @@
                           <th>Id</th>
                           <th>Proveedor</th>
                           <th>Fecha</th>
+                          <th>Cod.</th>
+                          <th>Pto.</th>
+                          <th>Numero</th>
+                          <th>Total</th>
                           <th>Acciones</th>
                         </tr>
                   </thead>
@@ -44,6 +50,10 @@
                                     <td><?=$fact->id ?></td>
                                     <td><?=$fact->proveedor ?></td>
                                     <td><?=$fact->fecha ?></td>
+                                    <td><?=$fact->codigo_comp ?></td>
+                                    <td><?=$fact->puerto ?></td>
+                                    <td><?=$fact->numero ?></td>                                    
+                                    <td align="right"><?=number_format($fact->total,2,".",",") ?></td>
                                     <td>
                                         <a class="btn-default fa fa-eye" title="Ver" 
                                             href="<?php echo base_url(); ?>facturas/ver/<?=$fact->id?>">

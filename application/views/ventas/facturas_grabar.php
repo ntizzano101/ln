@@ -1,8 +1,6 @@
 
 <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
-   
-
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -22,7 +20,7 @@
                                     <option value="">Seleccione una empresa</option>
                                 <?php foreach ($lista_empresas as $emp) {?>
                                     <option value="<?=$emp->id_empresa?>"
-                                        <?php if ($emp->id_empresa==$factura->empresa){ echo " selected ";}?> >
+                                        <?php if ($emp->id_empresa==1){ echo " selected ";}?> >
                                         <?=$emp->razon_soc?>
                                     </option>
                                 <?php }?>        
@@ -74,16 +72,14 @@
                             <div class="col-md-3">            
                                         <label>Nro Comprobante</label>     
                                             <input type="text" name="factnro2" id="factnro2" 
-                                             value="" class="form-control" readonly />
-                                        
-                                        
+                                             value="" class="form-control" readonly />                                                               
                             </div>  
                         </div>      
                         <div class="row">
                             <div class="col-md-6">            
                                     <label for="fecha">Fecha</label>
                                     <input type="date" name="fecha" id="fecha" 
-                                        value="" class="form-control"/> 
+                                        value="<?=date("Y-m-d");?>" class="form-control"/> 
                                     <div>
                                         <small><font color="red" id="errFecha">                                        
                                         </font></small>
@@ -116,12 +112,63 @@
                                         value="" readonly="readonly">                                       
                                 </div>                               
                         </div>    
-                                        
-                        
+                        <div class="row">
+                            <div class="col-md-3">            
+                                    <label for="cond">Servicios Desde</label>
+                                    <input type="date" name="sdesde" id="sdesde" 
+                                        value="<?=date("Y-m-d");?>"   class="form-control"/>                                                                             
+                                    <div>
+                                        <small><font color="red" id="error_sdesde">                                        
+                                        </font></small>
+                                    </div>                                 
+                            </div>                                 
+                            <div class="col-md-3">            
+                                    <label for="cond">Servicios Hasta</label>
+                                    <input type="date" name="shasta" id="shasta" 
+                                        value="<?=date("Y-m-d");?>"   class="form-control"/>                                                                             
+                                    <div>
+                                       <small><font color="red" id="error_shasta">                                        
+                                        </font></small>
+                                    </div>                                              
+                            </div>
+                             <div class="col-md-3">  
+                                    <label for="Direccion">CBU Informado</label>
+                                    <?php
+                                    $this->load->helper('form');                     
+                                    echo form_dropdown('cbu', $bancos, $cbu,'class="form-control" id="cbu"');
+                                    ?>
+                                    <div>
+                                       <small><font color="red" id="cbu">                                        
+                                        </font></small>
+                                    </div>                                              
+                             </div> 
+                             <div class="col-md-3">  
+                                    <label for="Direccion">Comprobante Asociado</label>
+                                    <?php
+                                    echo form_dropdown('comp_asoc', $comps_asoc,0,'class="form-control" id="id_comp_asoc"');
+                                    ?>
+                                    <div>
+                                       <small><font color="red" id="cbu">                                        
+                                        </font></small>
+                                    </div>                                              
+                             </div>                               
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">             
+                            <label for="cond">Fecha Vence Comprobante</label>
+                                    <input type="date" name="vfecha" id="vfecha" 
+                                        value="<?=date("Y-m-d");?>"   class="form-control"/>                                                                             
+                                    <div>
+                                       <small><font color="red" id="error_vfecha">                                        
+                                        </font></small>
+                                    </div>              
+                            </div>                               
+                            <div class="col-md-6">                        
+                            </div>                               
+                        </div>
                         
                         <br>
-                        <hr>  
-                        
+                        <hr>                          
                         <div id="tbFactura">
                             <input type=button id="btnVerMdItem" value="Nuevo item" onclick="verMdItem()" />
                             <table class="table table-striped">
@@ -174,7 +221,7 @@
                             </table>
                             
                         </div>
-                        
+                              
                         <br>
                         <hr>  
                         
@@ -183,14 +230,9 @@
                                 <div class="row">
                                     <label for="formaPago">Forma de pago</label>
                                     <select name="formaPago" id="formaPago" class="form-control">
-                                        <option value=""
-                                             <?php if ($factura->formaPago==""){ echo " selected ";}?>  
-                                            >Seleccione una forma de pago</option>
-                                        <option value="0" 
-                                            <?php if ($factura->formaPago=="0"){ echo " selected ";}?>    
-                                            >Contado</option>
-                                        <option value="1"
-                                           <?php if ($factura->formaPago=="1"){ echo " selected ";}?>     
+                                        <option value=""                                    
+                                            >Seleccione una forma de pago</option>                                      
+                                        <option value="1" selected      
                                             >Cuenta corriente</option>
                                     </select>
                                     <div >
@@ -201,7 +243,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                            <label for="intImpNeto">Importe Neto</label>
+                            <label for="intImpNeto">Importe Neto Gravado</label>
                             <input type="text" name="intImpNeto" id="intImpNeto" 
                                 value="" class="form-control" readonly/>
                             
@@ -320,7 +362,7 @@
                     </div>
                     
                     <div class="col-md-8">  
-                        
+                       <!-- 
                         <div class="form-inline">
                             <input type="text" name="itemTxtBsq" id="itemTxtBsq" placeholder="Filtrar item" class="form-control"/>
                             <input type="button" onclick="buscaItem()" id class="btn btn-default" value="Filtrar" class="form-control"/>
@@ -329,13 +371,14 @@
                             </select>
                             
                         </div>
-                        
+                                !-->
                         
                     <hr>    
                         
                         <div class="row">
                             <label for="itemCod">Código</label>
                             <input type="hidden" name="itemidArt" id="itemidArt" class="form-control"/>
+                            <input type="hidden" name="itemTipo" id="itemTipo" class="form-control"/>
                             <input type="text" name="itemCod" id="itemCod" class="form-control"/> 
                         </div>
 
@@ -365,8 +408,10 @@
                                 <option value="0.05">0008 (5%)</option>
                                 <option value="0.025">0009 (2.5%)</option>
                                 -->
-                                <option value="0.21">0005 (21%)</option>
+                                <option value="0.105">IVA 10.5%</option>
+                                <option value="0.21">IVA 21%</option>
                                 <option value="0">Exento</option>
+                                <option value="0">No Gravado</option>
                             </select>
                         </div>
 
@@ -400,8 +445,7 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title"></h1>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h1 class="modal-title"></h1>             
             </div>
 
             <!-- Modal body -->
@@ -487,12 +531,12 @@ $(document).ready(function(){
                 $("#proviva").val(data.cond_iva);
                 $("#cuit").val(data.cuit);
                 $("#itemIva").html("")
-                if($.trim(data.cond_iva)=="Consumidor Final" || $.trim(data.cond_iva)=="Exento"){
-                    $("#itemIva").html("<option value='0' Selected='Selected'>Exento</option>");
-                }
-                else{
-                    $("#itemIva").html('<option value=".105">10,5%</option><option value=".21" Selected="Selected">21%</option>');
-                }                
+                //if($.trim(data.cond_iva)=="Consumidor Final" || $.trim(data.cond_iva)=="Exento"){
+                //    $("#itemIva").html("<option value='0' Selected='Selected'>Exento</option>");
+                //}
+                //else{
+                    $("#itemIva").html('<option value=".105">IVA 10,5%</option><option value=".21" Selected="Selected">IVA 21%</option> <option value="E">Exento</option><option value="N">No Gravado</option>');
+                //}                
             });
         if($(this).val()==="" || $("#empresa").val()===""){
             $("#cod_afip").html('<option value="">Sin tipos de comprobante</option>');
@@ -533,18 +577,24 @@ $(document).ready(function(){
             
     });
 
-    $("#cod_afip").change(function(){
+    $("#cod_afip").change(function(){        
         $("#factnro1").html("");   
         $.post(CFG.url + 'Ajax/busca_puertos/',
             {id:$(this).val(),empresa:$("#empresa").val()},
             function(data){                                  
                 $("#factnro1").html(data.combo);              
-            });       
+         });     
+         $.post(CFG.url + 'Ajax/busca_comp_asoc/',
+            {id:$(this).val(),cliente:$("#cliente").val()},       
+             function(data){                                                                                                            
+                $("#id_comp_asoc").html(data.combo);              
+         });       
+
     });
 
 
-    
-    //$('#factnro1').keyup(function(){ $("#errFactnro").html("");});
+
+
     $('#factnro2').keyup(function(){ $("#errFactnro").html("");});
     $('#fecha').keyup(function(){ $("#errFecha").html("");});
     $('#fecha').change(function(){ $("#errFecha").html("");});
@@ -585,6 +635,7 @@ $(document).ready(function(){
                 itemPrcU:$("#itemPrcU").val(),
                 itemIva:$("#itemIva").val(),
                 itemidArt:$("#itemidArt").val(),
+                itemTipo:$("#itemTipo").val(),
                 textIva:$("#itemIva option:selected").text(),
                 itemTotal:$("#itemTotal").val(),
                 items:$("#items").val()
@@ -716,12 +767,16 @@ function grabar(){
     $("#errPuerto").html("");
     $("#errFecha").html("");
     $("#errTotal").html("");
+    $("#error_sdesde").html("");
+    $("#error_shasta").html("");
     $("#errFormaPago").html("");
     if($("#empresa").val()==""){$("#errEmp").html("Seleccione Una Empresa");proceso=false;}
     if($("#cliente").val()==""){$("#errCli").html("Seleccione Un Clente");proceso=false;}
     if($("#cod_afip").val()==""){$("#errCod_afip").html("Seleccione Un Tipo De Comprobante");proceso=false;}
     if(document.getElementById('factnro1').value==''){$("#errPuerto").html("Seleccione Un Puerto/Punto de Venta");proceso=false;}
     if($("#fecha").val()==""  ||  $("#fecha").val().length!=10){$("#errFecha").html("Fecha Incorrecta");proceso=false;}
+    if($("#sdesde").val()==""  ||  $("#sdesde").val().length!=10){$("#error_sdesde").html("Fecha Incorrecta");proceso=false;}
+    if($("#shasta").val()==""  ||  $("#shasta").val().length!=10){$("#error_shasta").html("Fecha Incorrecta");proceso=false;}    
     if($("#intTotal").val()=="0"  || $("#intTotal").val()==""){$("#errTotal").html("El Total No Puede Ser Cero");proceso=false;}
     if($("#formaPago").val()==""){$("#errFormaPago").html("Seleccione Forma de Pago");proceso=false;}
     if(proceso===true){             ;
@@ -744,8 +799,13 @@ function grabar(){
             intTotal:$('#intTotal').val(),
             obs:$('#obs').val(),
             cuit:$('#cuit').val(),
+            cbu:$('#cbu').val(),
+            sdesde:$('#sdesde').val(),
+            shasta:$('#shasta').val(),
+            vfecha:$('#vfecha').val(),
+            id_comp_asoc:$('#id_comp_asoc').val(),
             items:$('#items').val() } ,
-            function(data){
+            function(data){                       
                 $('#errores').html('');
                 $('#errores').html(data);
                     if(data.error==""){
