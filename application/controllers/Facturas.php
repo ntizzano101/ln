@@ -185,7 +185,7 @@ class Facturas extends CI_Controller {
         if($obj->items=='[]'){$error->intItems="La Factura debe Contener Algun item Para Calcular Totales";$falla=true;}      
         if(!$falla){
             $resultado=$this->facturas_model->guardar($obj);
-            if ($resultado["estado"]=="0"){
+           /* if ($resultado["estado"]=="0"){
                 $falla=false;
             }else{
                 $data["mensaje"]='<div class="alert alert-warning alert-dismissible" role="alert">'.
@@ -194,6 +194,7 @@ class Facturas extends CI_Controller {
                     $resultado["mensaje"].
                     '</div>';
             }
+            */
         }
         
         if($falla){
