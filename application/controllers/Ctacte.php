@@ -67,6 +67,8 @@ class Ctacte extends CI_Controller {
         $data["proveedor"]=$this->ctacte_model->proveedor($id_prov);
         $data["deuda"]=$this->ctacte_model->comp_adeudados($id_prov);
         $data["medios_de_pago"]=$this->ctacte_model->medios_pago($id_prov);
+        $this->load->model('facturas_model');
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas(); 
         $data["bancos"]=$this->ctacte_model->bancos();
         $data["id_opago"]=$id_opago;
         $this->load->view('encabezado.php');
@@ -284,8 +286,9 @@ public function ingreso_pago_otro(){
         $id_aux=$this->input->post('id_aux');    
         $compro=$this->input->post('compro');        
         $id_proveedor=$this->input->post('id_proveedor');      
+        $empresa=$this->input->post('empresa');      
         $opagofecha=$this->input->post('opagofecha');      
-        $total_fin=$this->input->post('total_fin');      
+        $total_fin=(float)$this->input->post('total_fin');      
         $filas=explode(";",$compro);        
         $tpagado=0;
         //controlo cada factura
@@ -293,14 +296,15 @@ public function ingreso_pago_otro(){
             $f=explode("_",$fa);
             //0->id comprobante //1->saldo adeudado //2-> es lo pagado
             if(abs($f[1]) < abs($f[2])){$data->rta="no puede ingresar a pagar mas que el saldo ";}
-            $tpagado+=$f[2];    
+            $tpagado+=(float)$f[2];    
             $factura = new stdClass();   
             $factura->id=0;
             $factura->id_op=0;
             $factura->id_factura=$f[0];
             $factura->monto=$f[2];
             $pago->facturas[]=$factura;
-        }               
+        }
+		        $tpagado=round($tpagado,2);  										
         //controlo que el total cancelando coincida
         if($tpagado!=$total_fin){$data->rta="El Total cancelado ".$tpagado." debe coincidir con los Pagos " . $total_fin;}
         if($opagofecha==""){$data->rta="La Fecha de la OP no puede ser vacia";}                          
@@ -308,6 +312,7 @@ public function ingreso_pago_otro(){
             $opago = new stdClass();   
             $opago->fecha=$opagofecha;
             $opago->id=0;
+            $opago->id_empresa=$empresa;
             $opago->id_proveedor=$id_proveedor;
             $opago->total=$total_fin;
             $pago->opago=$opago;               

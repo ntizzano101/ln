@@ -20,6 +20,8 @@
             <li><a href="<?=base_url()?>etiquetas">Etiquetas </a></li>
             <li><hr></li>            
             <li><a href="<?=base_url()?>ventas/listar">Comprobantes</a></li>          
+			            <li><hr></li>  
+            <li><a href="<?=base_url()?>retenciones">Retenciones</a></li>                			   
           </ul>
         </li> 
         <li class="dropdown">

@@ -10,7 +10,15 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">POSICION IVA</div>     
                 <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>iva/posicion">                                           
-                Periodo   <input type="text" class="form-control" name="peri" value="<?=$peri?>" id="peri" placeholder="aaaamm..">
+                Periodo <input type="text" class="form-control" name="peri" value="<?=$peri?>" id="buscar" placeholder="aaaamm">
+                <select name="empresa" id="empresa" class="form-control">
+                                    <option value="">Seleccione una empresa</option>
+                                <?php foreach ($lista_empresas as $emp) {?>
+                                    <option value="<?=$emp->id_empresa?>">
+                                        <?=$emp->razon_soc?>
+                                    </option>
+                                <?php }?>        
+                                </select>
                 <button type="submit" class="btn btn-primary">Filtrar</button>	
                 </form>
                 <table class="table">

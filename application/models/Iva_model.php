@@ -186,7 +186,7 @@ class Iva_model extends CI_Model {
         return $retorno;
         } 
 
-  public function posicion($peri){
+  public function posicion($peri,$empresa){
     $mes=substr($peri,4,2);
     $ano=substr($peri,0,4);
     $f1=$ano.'-'. $mes .'-01';  
@@ -195,14 +195,14 @@ class Iva_model extends CI_Model {
 
     //debito fiscal 
     //ventas 
-    $sql1="select sum(iva) as iva from facturas where periodo_iva=? and id_cliente > 0 ";    
+    $sql1="select sum(iva) as iva from facturas where periodo_iva=? and id_empresa=? and id_cliente > 0 ";    
     //Credito Fiscal
     //FACTURAS compras  
-    $sql2="select sum(monto) as iva from opago_pago where rete_fecha >= ? and rete_fecha < ? and id_medio_pago=3";
-    $sql3="select sum(iva) as iva ,sum(per_iva) as per_iva from facturas where periodo_iva = ? and id_proveedor > 0 ";
-    $retorno1=$this->db->query($sql1, array($peri))->result();
-    $retorno2=$this->db->query($sql2, array($f1,$f2))->result();
-    $retorno3=$this->db->query($sql3, array($peri))->result();
+    $sql2="select sum(monto) as iva from opago_pago where rete_fecha >= ? and rete_fecha < ? and   id_empresa=? and id_medio_pago=3";
+    $sql3="select sum(iva) as iva ,sum(per_iva) as per_iva from facturas where periodo_iva = ? and id_proveedor > 0  and id_empresa=? ";
+    $retorno1=$this->db->query($sql1, array($peri,$empresa))->result();
+    $retorno2=$this->db->query($sql2, array($f1,$f2,$empresa))->result();
+    $retorno3=$this->db->query($sql3, array($peri,$empresa))->result();
     return array($retorno1,$retorno2,$retorno3);
   }      
  }

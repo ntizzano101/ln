@@ -28,7 +28,10 @@ class Facturas_model extends CI_Model {
             $sql="SELECT DISTINCT id, cod_afip, cod_afip_t,nombre FROM cod_afip".
             " WHERE id_iva=(SELECT iva FROM proveedores WHERE id=?)".
             " AND id_iva_compra=(SELECT cond_iva FROM empresas WHERE id_empresa=?)".
-            " and cod_afip < 700 ORDER BY cod_afip";
+            " and cod_afip < 700  ".
+            " UNION SELECT DISTINCT id, cod_afip, cod_afip_t,nombre FROM cod_afip where id in(63,64,65)
+            ORDER BY cod_afip";
+            
             $retorno=$this->db->query($sql, array($id_proveedor,$id_empresa))->result();           
             return $retorno;
             //SACO INTERNO REMITO PRRESUPUESTO
@@ -154,7 +157,7 @@ class Facturas_model extends CI_Model {
                 if(!(is_numeric($obj->intConNoGrv))){$obj->intConNoGrv="0.00";}
                 if(!(is_numeric($obj->intTotal))){$obj->intTotal="0.00";}        
                 list($ano,$mes,$dia)= explode("-", $obj->fecha);                
-                $obj->periva=$ano.$mes;
+                
                 $items=json_decode($obj->items);          
                 //guardo encabezado          
                 $sql="INSERT INTO facturas(
@@ -448,5 +451,13 @@ class Facturas_model extends CI_Model {
         $retorno=$this->db->query($sql, array($id))->result();
         return $retorno;
         }       
+         
+    public function periva($id,$periva)
+        {
+        $sql="update facturas set periodo_iva=? where id_factura=?";
+        $retorno=$this->db->query($sql, array($periva,$id))->result();      
+        return $retorno;
+           
+    }    									   
 }
 ?>

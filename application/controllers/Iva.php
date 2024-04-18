@@ -41,10 +41,12 @@ class Iva extends CI_Controller {
     {
        
         $this->load->model('iva_model');
+        $this->load->model('facturas_model');
         $periodo=$this->input->post('periodo');
         $empresa=$this->input->post('empresa');
         if($periodo==''){$periodo=date('Ym');}
         if($empresa==''){$empresa=1;}
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas(); 
         $data["iva"]=$this->iva_model->compras($periodo,$empresa);
         $data["periodo"]=$periodo;
         $this->load->view('encabezado.php');
@@ -56,6 +58,8 @@ class Iva extends CI_Controller {
     {
        
         $this->load->model('iva_model');
+        $this->load->model('facturas_model');
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas(); 
         $periodo=$this->input->post('periodo');
         $empresa=$this->input->post('empresa');
         if($periodo==''){$periodo=date('Ym');}
@@ -72,13 +76,18 @@ class Iva extends CI_Controller {
     {
        
         $this->load->model('iva_model');
+        $this->load->model('facturas_model');
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas(); 
         $peri=$this->input->post('peri');
+        $empresa=$this->input->post('empresa');
+        if($empresa==""){$empresa=0;}
         if($peri==''){$peri=date('Ym');}
-        $todo=$this->iva_model->posicion($peri);
+        $todo=$this->iva_model->posicion($peri,$empresa);
         $data["debito1"]=$todo[0];
         $data["credito1"]=$todo[1];
         $data["credito2"]=$todo[2];
         $data["peri"]=$peri;
+        $data["empresa"]=$empresa;
         $this->load->view('encabezado.php');
         $this->load->view('menu.php');
         $this->load->view('iva/posicion_iva.php',$data);

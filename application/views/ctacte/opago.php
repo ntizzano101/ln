@@ -80,26 +80,34 @@
                 <?php }?>             
                 
                 <table class="table">
-                  <thead>
-                        <tr>
-                          <th>Seleccione los medio de pago</th>                                                                     
-                          <th> </th> 
-                        </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                        <td><?=$combo ?></td>
-                        <td><button type="button" class="btn btn-success" id="ingreso">Seleccionar</button>
-                        </td>
-                </tr>
-                 <tr>                    
+                <tbody>
+                <tr>                    
                  <td>      
-                 <label for="itemPrcU">Fecha de La Orden De Pago</label>
+                 <label for="itemPrcU">EMPRESA</label>
+                 <select name="empresa" id="empresa" class="form-control">                                 
+                                <?php foreach ($lista_empresas as $emp) {?>
+                                    <option value="<?=$emp->id_empresa?>">
+                                        <?=$emp->razon_soc?>
+                                    </option>
+                                <?php }?>        
+                                </select>
                 </td>
                 <td>
+                <label for="itemPrcU">FECHA OP</label>
                           <input type="date" name="itemPrcU" value="<?=date('Y-m-d')?>"id="opagofecha" class="form-control"/> 
                 </td>
-                 </tr>
+                </tr>                  
+                <tr>
+                        <td>
+                        <label for="itemPrcU">Medios de Pago</label>    
+                        <?=$combo ?>
+                       </td>
+                        <td>
+                        <br/>   
+                        <button type="button" class="btn btn-success" id="ingreso">Seleccionar</button>
+                        </td>
+                </tr>
+                 
                  
                                                         
                   </tbody>
@@ -304,7 +312,7 @@ var CFG = {
                    total=total+parseFloat($("input[name='compr["+i+"][paga]']").val());        
           
            } 
-          $("#mostrar_deudor").html(total);
+          $("#mostrar_deudor").html(total.toFixed(2));
     }
 
     function recalcular(){
@@ -334,6 +342,7 @@ var CFG = {
             {id_aux:$("#id_pago_aux").val(),             
              compro:cancela,
              id_proveedor:$("#id_proveedor").val(),             
+             empresa:$("#empresa").val(),        
              opagofecha:$("#opagofecha").val(),
              total_fin:$("#total_fin").val()
             },

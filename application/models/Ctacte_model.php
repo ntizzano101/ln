@@ -106,7 +106,7 @@ public function finalizar_opago($o,$id){
         $f->id_op=$o->opago->id;
         if($f->monto<>0.00){$this->db->insert('opago_facturas',$f);}  ;
     }
-    $this->db->query('update opago_pago set id_pago=? where id_pago=? ',array($o->opago->id,$id));
+    $this->db->query('update opago_pago set id_pago=?,id_empresa=? where id_pago=? ',array($o->opago->id,$o->opago->id_empresa,$id));
 }
 public function borrar_opago($id,$id_proveedor){
     $this->db->query('delete from opago_pago  where id_pago=? ',array($id));
