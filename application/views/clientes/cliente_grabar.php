@@ -185,13 +185,13 @@ switch ($proceso) {
                                 </font></small>
                             </div>
 
-                            <label for="telefonos">Contato Pagos
+                            <label for="telefonos">Contacto Pagos
                             </label> 
                             <input type="text" name="contacto_pago" id="contacto_pago" class="form-control" 
                                    value="<?=$cliente->contacto_pago?>" />                          
                             <br>
 
-                            <label for="telefonos">Contato compras
+                            <label for="telefonos">Contacto compras
                             </label> 
                             <input type="text" name="contacto_compra" id="contacto_compra" class="form-control" 
                                    value="<?=$cliente->contacto_compra?>" />
