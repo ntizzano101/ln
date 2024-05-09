@@ -29,7 +29,7 @@
                 <table class="table">
                   <thead>
                         <tr>
-                          <th>DNI</th>
+                          <th>CUIT</th>
                           <th>Nombre</th>
                           <th>Direccion</th>
                           <th>Empresa</th>
@@ -40,7 +40,7 @@
                         <?php 
                         foreach($proveedores as $prov){ ?>	
                                 <tr>
-                                    <td><?=$prov->dni ?></td>
+                                    <td><?=$prov->cuit?></td>
                                     <td><?=$prov->proveedor ?></td>
                                     <td><?=$prov->domicilio ?></td>
                                     <td><?=$prov->empresa_nombre ?></td>

@@ -114,9 +114,10 @@ switch ($proceso) {
                             </label>
                             <select name="iva" id="iva" class="form-control">
                                 <option value="">Seleccione un valor de iva</option>
-                                <option value="0.21" <?php if ($articulo->iva=="0.21"){echo "selected";}?>>0,21</option>
+                                <option value="0.21" <?php if ($articulo->iva=="0.21"){echo "selected";}?>>21</option>
                                 <option value="10.5" <?php if ($articulo->iva=="10.5"){echo "selected";}?>>10,5</option>
                                 <option value="27" <?php if ($articulo->iva=="27"){echo "selected";}?>>27</option>
+                                <option value="0" <?php if ($articulo->iva=="0"){echo "selected";}?>>0</option>
                             </select>
                             <div id="errIva">
                                 <small><font color="red">

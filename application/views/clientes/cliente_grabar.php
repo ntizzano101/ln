@@ -184,6 +184,33 @@ switch ($proceso) {
                                     <?php if (isset($error->rz)){echo $error->rz;}?> 
                                 </font></small>
                             </div>
+
+                            <label for="telefonos">Contato Pagos
+                            </label> 
+                            <input type="text" name="contacto_pago" id="contacto_pago" class="form-control" 
+                                   value="<?=$cliente->contacto_pago?>" />                          
+                            <br>
+
+                            <label for="telefonos">Contato compras
+                            </label> 
+                            <input type="text" name="contacto_compra" id="contacto_compra" class="form-control" 
+                                   value="<?=$cliente->contacto_compra?>" />
+                          
+                            <br>
+                            <label for="email">Tipo
+                            </label>
+                            <select name="tipo" id="tipo" class="form-control">                                
+                            <?php 
+                            $lista_tipo=array('ABONO','CTACTE','CORPORATIVO');
+                            foreach ($lista_tipo as $etiqueta) {?>
+                                <option value="<?=$etiqueta?>" 
+                                    <?php if ($etiqueta==$cliente->tipo){echo "selected";}?> >
+                                    <?=$etiqueta?>
+                                </option>
+                            <?php }?>        
+                            </select>
+
+
                         </div>
                         <input type="hidden" name="id" value="<?=$cliente->id?>" />
                         <button type="submit" class="btn btn-primary">Grabar</button>

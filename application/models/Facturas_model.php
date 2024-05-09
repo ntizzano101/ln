@@ -156,6 +156,7 @@ class Facturas_model extends CI_Model {
                 if(!(is_numeric($obj->intImpExto))){$obj->intImpExto="0.00";}
                 if(!(is_numeric($obj->intConNoGrv))){$obj->intConNoGrv="0.00";}
                 if(!(is_numeric($obj->intTotal))){$obj->intTotal="0.00";}        
+                if(!(is_numeric($obj->intItc))){$obj->intItc="0.00";}
                 list($ano,$mes,$dia)= explode("-", $obj->fecha);                
                 
                 $items=json_decode($obj->items);          
@@ -187,10 +188,12 @@ class Facturas_model extends CI_Model {
                     cbu,
                     id_comp_asoc,
                     vence,
-                     per_ing_bto,
-                     per_iva,
-                     per_ganancia,
-                     per_stafe)VALUES(";        
+                    per_ing_bto,
+                    per_iva,
+                    per_ganancia,
+                    per_stafe,
+                    itc
+                    )VALUES(";        
                 $sql.="    ?,";  // id_proveedor 1
                 $sql.="    ?,";  //fecha 2
                 $sql.="    ?,";  //puerto 3 
@@ -220,7 +223,8 @@ class Facturas_model extends CI_Model {
                 $sql.="    ,?"; //27      
                 $sql.="    ,?"; //28      
                 $sql.="    ,?"; //29      
-                $sql.="    ,?)"; //30               
+                $sql.="    ,?"; //30               
+                $sql.="    ,?)"; //31               
                 $mtz=array();
                 $mtz[]=$obj->proveedor;
                 $mtz[]=$obj->fecha;
@@ -252,6 +256,7 @@ class Facturas_model extends CI_Model {
                 $mtz[]=$obj->intPerIva;
                 $mtz[]=$obj->intPerGnc;
                 $mtz[]=$obj->intPerStaFe;
+                $mtz[]=$obj->intItc;
                 $this->db->query($sql, $mtz);        
                 $last_id=$this->db->insert_id();        
                 //Ahora los items 
@@ -307,7 +312,7 @@ class Facturas_model extends CI_Model {
                 }
                 $iva=$iva21+$iva105+$iva27;
                 $neto=$neto21+$neto105+$neto0+$neto27;
-                $total=$neto+$iva+$nogra+$exento+$obj->intPerIngB+$obj->intPerIva+$obj->intPerGnc+$obj->intPerStaFe;
+                $total=$neto+$iva+$nogra+$exento+$obj->intPerIngB+$obj->intPerIva+$obj->intPerGnc+$obj->intPerStaFe+$obj->intItc;
                 $sql="UPDATE facturas set 
                 total=?,
                 excento=?,
@@ -317,7 +322,10 @@ class Facturas_model extends CI_Model {
                 neto105=?,
                 neto=?,
                 iva=?,
-                con_nograv=?      
+                con_nograv=?,                 
+                neto0=? ,
+                iva27=?,
+                neto27=?
                 where id_factura=?";
                 $mtz=array(
                     $total,
@@ -329,6 +337,9 @@ class Facturas_model extends CI_Model {
                     $neto,
                     $iva,
                     $nogra,
+                    $neto0,
+                    $iva27,
+                    $neto27,
                     $last_id);
                 //   echo $sql;
                 //   print_r($mtz);die;    

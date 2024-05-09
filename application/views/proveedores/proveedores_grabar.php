@@ -135,16 +135,7 @@ switch ($proceso) {
                             </div>
                             <br>
                             
-                            <label for="email">DNI
-                            </label>
-                            <input type="text" name="dni" id="dni" class="form-control" 
-                                   value="<?=$proveedor->dni?>" />
-                            <div id="errDNI">
-                                <small><font color="red">
-                                    <?php if (isset($error->dni)){echo $error->dni;}?> 
-                                </font></small>
-                            </div>
-                            <br>
+                         
                             
                             <label for="email">Etiqueta 
                             </label>
@@ -184,6 +175,35 @@ switch ($proceso) {
                                     <?php if (isset($error->rz)){echo $error->rz;}?> 
                                 </font></small>
                             </div>
+
+                            <label for="email">CBU
+                            </label>
+                            <input type="text" name="cbu" id="cbu" class="form-control" 
+                                   value="<?=$proveedor->cbu?>" />
+                            <div id="errCbu">
+                                <small><font color="red">
+                                    <?php if (isset($error->cbu)){echo $error->cbu;}?> 
+                                </font></small>
+                            </div>
+                            <br>
+
+                            <label for="email">Contacto
+                            </label>
+                            <input type="text" name="contacto" id="contacto" class="form-control" 
+                                   value="<?=$proveedor->contacto?>" />                            
+                            <br>
+
+                            <label for="email">Condicion de Pago(dias)
+                            </label>
+                            <input type="text" name="cond_pago" id="cond_pago" class="form-control" 
+                                   value="<?=$proveedor->cond_pago?>" />                            
+                                   <div id="errCond_pago">
+                                <small><font color="red">
+                                    <?php if (isset($error->cond_pago)){echo $error->cond_pago;}?> 
+                                </font></small>
+                            </div>
+                            <br>
+
                         </div>
                         <input type="hidden" name="id" value="<?=$proveedor->id?>" />
                         <button type="submit" class="btn btn-primary">Grabar</button>
@@ -209,7 +229,6 @@ $(document).ready(function(){
     $("#localidad").keydown(function() {$("#errLocalidad").html("");});
     $("#cp").keydown(function() {$("#errCp").html("");});
     $("#id_empresa").change(function() {$("#errIdEmpresa").html("");});
-    $("#dni").keydown(function() {$("#errDNI").html("");});
     $("#id_etiqueta").change(function() {$("#errIdEtiqueta").html("");});
     $("#rz").keydown(function() {$("#errRz").html("");});
     

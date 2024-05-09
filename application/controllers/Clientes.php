@@ -107,6 +107,10 @@ class Clientes extends CI_Controller {
         $obj->dni=trim($this->input->post('dni'));
         $obj->id_etiqueta=trim($this->input->post('id_etiqueta'));
         $obj->rz=trim($this->input->post('rz'));
+
+        $obj->contacto_compra=trim($this->input->post('contacto_compra'));
+        $obj->contacto_pago=trim($this->input->post('contacto_pago'));        
+        $obj->tipo=trim($this->input->post('tipo'));
         
         ##Validar
         $error= new stdClass();

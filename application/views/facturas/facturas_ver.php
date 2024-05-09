@@ -226,6 +226,11 @@
                             <input type="text" name="intPerStaFe" id="intPerStaFe" class="form-control"
                                 value="<?=$factura->per_stafe?>" disabled/>
                             <br>
+
+                            <label for="intItc">ITC</label>
+                            <input type="text" name="intItc" id="intItc" class="form-control"
+                                value="<?=$factura->itc?>" disabled/>
+                            <br>
                             
                             <label for="intImpExto">Importe Exento</label>
                             <input type="text" name="intImpExto" id="intImpExto" class="form-control"

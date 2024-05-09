@@ -21,46 +21,47 @@
                                 </select>
                 <button type="submit" class="btn btn-primary">Filtrar</button>	
                 </form>
-                <table class="table">
-                  <thead>
-                        <tr>
-                          <th>Concepto</th>
-                          <th align="right">Debe</th>
-                          <th align="right">Haber</th>
-                          <th align="right">Saldo</th>                          
-                        </tr>
-                  </thead>
-                  <tbody>
+                <table class="table">                 
                         <?php 
                         $total=$debito1[0]->iva;
                         //debito1
                         ?>	
                                 <tr>
+                                    <td></td>
+                                    <td></td>                                                                  
+                                </tr>
+                                <tr>
                                     <td>IVA Ventas</td>
-                                    <td align="right"><?=number_format($debito1[0]->iva,2,".",","); ?></td>                              
-                                    <td align="right">0.00</td>                                    
-                                    <td align="right"><?=number_format($total,2,".",",")?></td>                                    
+                                    <td align="right"><?=number_format($debito1[0]->iva,2,".",","); ?></td>                                                                  
                                 </tr>
                                 <?php $total=$total-$credito2[0]->iva; ?>
                                 <tr>
-                                    <td>IVA Compras</td>                                                        
-                                    <td align="right">0.00</td>
-                                    <td align="right"><?=number_format($credito2[0]->iva,2,".",","); ?></td>         
-                                    <td align="right"><?=number_format($total,2,".",",")?></td>                                    
+                                    <td>IVA Compras</td>                                                                                           
+                                    <td align="right"><?=number_format($credito2[0]->iva,2,".",","); ?></td>                                             
                                 </tr>
+                                <tr>
+                                <th>SUBTOTAL</th>                                                        
+                                <td align="right"><?=number_format($total,2,".",",")?></td>                                       
+                                </tr>
+
                                 <?php $total=$total-$credito1[0]->iva; ?>
                                 <tr>
-                                    <td>IVA Retenciones</td>                                                        
-                                    <td align="right">0.00</td>
-                                    <td align="right"><?=number_format($credito1[0]->iva,2,".",","); ?></td>                                                                                                    
-                                    <td align="right"><?=number_format($total,2,".",",")?></td>                                    
+                                    <td>  Retenciones</td>                                                        
+                                    <td align="right"><?=number_format($credito1[0]->iva,2,".",","); ?></td>                                                                                                   
                                 </tr>
                                 <?php $total=$total-$credito2[0]->per_iva; ?>                               
                                 <tr>
-                                    <td>IVA Percepciones</td>                                                        
-                                    <td align="right">0.00</td>
+                                    <td> Percepciones</td>                                                        
                                     <td align="right"><?=number_format($credito2[0]->per_iva,2,".",","); ?></td>                                             
-                                    <td align="right"><?=number_format($total,2,".",",")?></td>                                    
+                                </tr>
+                                <?php $total=$total-$credito2[0]->itc; ?>                               
+                                <tr>
+                                    <td>  ITC</td>                                                                                        
+                                    <td align="right"><?=number_format($credito2[0]->itc,2,".",","); ?></td>                                                                                 
+                                </tr>
+                                <tr>
+                                <th>TOTAL</th>                                                        
+                                <td align="right"><?=number_format($total,2,".",",")?></td>                                       
                                 </tr>
                         
 

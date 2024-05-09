@@ -199,7 +199,7 @@ class Iva_model extends CI_Model {
     //Credito Fiscal
     //FACTURAS compras  
     $sql2="select sum(monto) as iva from opago_pago where rete_fecha >= ? and rete_fecha < ? and   id_empresa=? and id_medio_pago=3";
-    $sql3="select sum(iva) as iva ,sum(per_iva) as per_iva from facturas where periodo_iva = ? and id_proveedor > 0  and id_empresa=? ";
+    $sql3="select sum(iva) as iva ,sum(per_iva) as per_iva,sum(itc) as itc from facturas where periodo_iva = ? and id_proveedor > 0  and id_empresa=? ";    
     $retorno1=$this->db->query($sql1, array($peri,$empresa))->result();
     $retorno2=$this->db->query($sql2, array($f1,$f2,$empresa))->result();
     $retorno3=$this->db->query($sql3, array($peri,$empresa))->result();
