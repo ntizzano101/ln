@@ -362,7 +362,7 @@
                     </div>
                     
                     <div class="col-md-8">  
-                       <!-- 
+                      
                         <div class="form-inline">
                             <input type="text" name="itemTxtBsq" id="itemTxtBsq" placeholder="Filtrar item" class="form-control"/>
                             <input type="button" onclick="buscaItem()" id class="btn btn-default" value="Filtrar" class="form-control"/>
@@ -371,7 +371,7 @@
                             </select>
                             
                         </div>
-                                !-->
+                               
                         
                     <hr>    
                         
@@ -409,7 +409,7 @@
                                 <option value="0.025">0009 (2.5%)</option>
                                 -->
                                 <option value="0.105">IVA 10.5%</option>
-                                <option value="0.21">IVA 21%</option>
+                                <option value="0.21" selected="selected">IVA 21%</option>
                                 <option value="0">Exento</option>
                                 <option value="0">No Gravado</option>
                             </select>

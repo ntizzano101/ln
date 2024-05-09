@@ -267,6 +267,18 @@
                             </div>
                             <br>
                             
+
+                            <label for="intItc">ITC</label>
+                            <input type="text" name="intItc" 
+                            value="<?= $factura->intItc==''?'0':$factura->intItc ?>"
+                            id="intItc" class="form-control"/>
+                            <div id="errIntItc">
+                                <small><font color="red">
+                                    <?php if (isset($error->errIntItc)){echo $error->errIntItc;}?> 
+                                </font></small>
+                            </div>
+                            <br>
+
                             <label for="intImpExto">Importe exento</label>
                             <input type="text" name="intImpExto" id="intImpExto" readonly="readonly"
                             value="<?= $factura->intImpExto==''?'0':$factura->intImpExto ?>"
@@ -379,7 +391,7 @@
                             <select name="itemIva" id="itemIva" class="form-control">
                                 <option value="0" selected="true" >IVA (0%)</option>
                                 <option value="0.105">IVA (10.5%)</option>
-                                <option value="0.21">IVA (21%)</option>
+                                <option value="0.21" selected="selected">IVA (21%)</option>
                                 <option value="0.27">IVA (27%)</option>                        
                                 <option value="E">Exento</option>
                                 <option value="N">No Grav</option>
@@ -526,6 +538,7 @@ $(document).ready(function(){
     $("#intPerStaFe").keyup(function(){$("#errIntPerStaFe").html(""); calcTotal(); });
     $("#intImpExto").keyup(function(){$("#errIntConNoGrv").html(""); calcTotal(); });
     $("#intConNoGrv").change(function(){$("#errIntImpExto").html(""); calcTotal(); });
+    $("#intItc").change(function(){$("#errIntItc").html(""); calcTotal(); });
     
     $("#bntIngItem").click(function(){
         if(!(isNaN($("#itemTotal").val()))){
@@ -627,6 +640,7 @@ function calcTotal(){
     intPerStaFe=parseFloat($("#intPerStaFe").val());
     intImpExto=parseFloat($("#intImpExto").val());
     intConNoGrv=parseFloat($("#intConNoGrv").val());
+    intItc=parseFloat($("#intItc").val());
     
     total=0.00;
     if(!(isNaN(intImpNeto))){total+=intImpNeto;}
@@ -637,6 +651,7 @@ function calcTotal(){
     if(!(isNaN(intPerStaFe))){total+=intPerStaFe;}
     if(!(isNaN(intImpExto))){total+=intImpExto;}
     if(!(isNaN(intConNoGrv))){total+=intConNoGrv;}
+    if(!(isNaN(intItc))){total+=intItc;}
     
     $("#intTotal").val(total);    
     ///tablita de ivas

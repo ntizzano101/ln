@@ -104,9 +104,12 @@ class Proveedores extends CI_Controller {
         $obj->localidad=trim($this->input->post('localidad'));
         $obj->cp=trim($this->input->post('cp'));
         $obj->id_empresa=trim($this->input->post('id_empresa'));
-        $obj->dni=trim($this->input->post('dni'));
+        $obj->dni="";
         $obj->id_etiqueta=trim($this->input->post('id_etiqueta'));
         $obj->rz=trim($this->input->post('rz'));
+        $obj->contacto=trim($this->input->post('contacto'));
+        $obj->cbu=trim($this->input->post('cbu'));
+        $obj->cond_pago=trim($this->input->post('cond_pago'));
         
         ##Validar
         $error= new stdClass();
@@ -116,8 +119,7 @@ class Proveedores extends CI_Controller {
         if($obj->telefonos==""){$error->telefonos="No puede estar vacío";}
         if($obj->email!=""){if(!($this->funciones->mail($obj->email))){$error->email="Debe ser un email válido";};}
         if($obj->cuit!=""){if(!($this->funciones->cuit($obj->cuit))){$error->cuit="Debe ser un cuit válido";};}
-        if($obj->iva==""){$error->iva="Debe seleccionar una condición de iva";}
-        if($obj->dni!=""){if($obj->dni < 99999 || $obj->dni > 99999999){$error->dni="Rango de número incorrecto";}}
+        if($obj->iva==""){$error->iva="Debe seleccionar una condición de iva";}        
         
         
         if(count((array)$error)==0){//Validacion OK
@@ -188,7 +190,9 @@ class Proveedores extends CI_Controller {
         
         $mensaje=$this->proveedores_model->borrar($id);
         if ($mensaje){
-            $data["mensaje"]='<div class="alert alert-success alert-dismissible" role="alert">'.
+            $color="success";
+            if(substr($mensaje,0,2)=="NO"){$color="danger";}
+            $data["mensaje"]='<div class="alert alert-'.$color.' alert-dismissible" role="alert">'.
                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'.
                 '<span aria-hidden="true">&times;</span></button>'.
                 $mensaje.

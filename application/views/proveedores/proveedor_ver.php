@@ -67,12 +67,7 @@
                                    value="<?=$proveedor->empresa_nombre?>" disabled />
                         <?php }?>    
                           
-                        <?php if ($proveedor->dni !="" ){ ?> 
-                            <label for="dni">DNI
-                            </label> 
-                            <input type="text" name="dni" id="dni" class="form-control" 
-                                   value="<?=$proveedor->dni?>" disabled />
-                        <?php }?>
+                        
                             
                         <?php if ($proveedor->etiqueta_nombre !="" ){ ?> 
                             <label for="etiqueta_nombre">Etiqueta
@@ -94,6 +89,28 @@
                             <input type="text" name="baja" id="baja" class="form-control" 
                                    value="<?=$proveedor->fecha_baja?>" disabled />
                         <?php }?>    
+
+                        <?php if ($proveedor->cbu !="" ){ ?> 
+                            <label for="baja">CBU
+                            </label> 
+                            <input type="text" name="cbu" id="cbu" class="form-control" 
+                                   value="<?=$proveedor->cbu?>" disabled />
+                        <?php }?> 
+                        
+                        <?php if ($proveedor->cond_pago !="" ){ ?> 
+                            <label for="baja">Condicion de Pago(dias)
+                            </label> 
+                            <input type="text" name="cond_pago" id="cond_pago" class="form-control" 
+                                   value="<?=$proveedor->cond_pago?>" disabled />
+                        <?php }?>   
+
+                        <?php if ($proveedor->contacto !="" ){ ?> 
+                            <label for="baja">Contacto
+                            </label> 
+                            <input type="text" name="contacto" id="contacto" class="form-control" 
+                                   value="<?=$proveedor->contacto?>" disabled />
+                        <?php }?>   
+
                         </div>
                         <button type="submit" class="btn btn-primary">Volver</button>
                         

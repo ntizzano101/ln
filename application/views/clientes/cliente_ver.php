@@ -93,7 +93,29 @@
                             </label> 
                             <input type="text" name="baja" id="baja" class="form-control" 
                                    value="<?=$cliente->fecha_baja?>" disabled />
-                        <?php }?>    
+                        <?php }?> 
+                        
+                        <?php if ($cliente->contacto_compra !="" ){ ?> 
+                            <label for="baja">Contacto Compra
+                            </label> 
+                            <input type="text" name="contacto_compra" id="contacto_compra" class="form-control" 
+                                   value="<?=$cliente->contacto_compra?>" disabled />
+                        <?php }?> 
+
+                        <?php if ($cliente->contacto_pago !="" ){ ?> 
+                            <label for="baja">Contacto Pago
+                            </label> 
+                            <input type="text" name="contacto_pago" id="contacto_pago" class="form-control" 
+                                   value="<?=$cliente->contacto_pago?>" disabled />
+                        <?php }?> 
+
+                        <?php if ($cliente->tipo !="" ){ ?> 
+                            <label for="baja">Tipo
+                            </label> 
+                            <input type="text" name="tipo" id="tipo" class="form-control" 
+                                   value="<?=$cliente->tipo?>" disabled />
+                        <?php }?> 
+
                         </div>
                         <button type="submit" class="btn btn-primary">Volver</button>
                         

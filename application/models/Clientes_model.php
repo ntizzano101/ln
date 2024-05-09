@@ -96,6 +96,7 @@ class Clientes_model extends CI_Model {
             $cliente->id=""; $cliente->cliente=""; $cliente->domicilio=""; $cliente->telefonos=""; $cliente->email="";
             $cliente->cuit=""; $cliente->iva=""; $cliente->localidad=""; $cliente->cp=""; $cliente->id_empresa="";
             $cliente->dni=""; $cliente->baja=""; $cliente->id_etiqueta=""; $cliente->rz="";
+            $cliente->contacto_compra=""; $cliente->contacto_pago=""; $cliente->tipo="";
             return $cliente;
         }  
         
@@ -113,11 +114,14 @@ class Clientes_model extends CI_Model {
             $cliente->id_empresa,
             $cliente->dni,
             $cliente->id_etiqueta,
-            $cliente->rz
+            $cliente->rz,
+            $cliente->contacto_compra,
+            $cliente->contacto_pago,
+            $cliente->tipo
         );
         
         $sql="INSERT INTO clientes (cliente,domicilio,telefonos,email,cuit,iva,localidad,cp,".
-            "id_empresa,dni,id_etiqueta,rz) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+            "id_empresa,dni,id_etiqueta,rz,contacto_compra,contacto_pago,tipo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         return $this->db->query($sql, $mtz);   
         }    
         
@@ -135,12 +139,15 @@ class Clientes_model extends CI_Model {
             $cliente->id_empresa,
             $cliente->dni,
             $cliente->id_etiqueta,
-            $cliente->rz,
-            $cliente->id    
+            $cliente->rz,            
+            $cliente->contacto_compra,
+            $cliente->contacto_pago,
+            $cliente->tipo    ,
+            $cliente->id
         );
         
         $sql="UPDATE clientes SET cliente=?, domicilio=?, telefonos=?, email=?, cuit=?, iva=?,localidad=?, cp=?,".
-            " id_empresa=?, dni=?, id_etiqueta=?, rz=? WHERE id=?";
+            " id_empresa=?, dni=?, id_etiqueta=?, rz=?,contacto_compra=?,contacto_pago=?,tipo=? WHERE id=?";
         return $this->db->query($sql, $mtz);   
         }      
         
@@ -152,9 +159,9 @@ class Clientes_model extends CI_Model {
         $datos=$this->db->query($sql, array($id))->result();
         
         if (count($datos)>0){//seteamos baja
-            $sql="UPDATE clientes SET baja=? WHERE id=?";
-            $this->db->query($sql, array(date("Y-m-d"),$id));
-            $retorno="El cliente se ha dado de baja con éxito";
+            //$sql="UPDATE clientes SET baja=? WHERE id=?";
+            //$this->db->query($sql, array(date("Y-m-d"),$id));
+            $retorno="NO se ha dado de baja tiene movimientos";
         }else{//eliminamos
             $sql="DELETE FROM clientes WHERE id=?";
             $this->db->query($sql, array($id));

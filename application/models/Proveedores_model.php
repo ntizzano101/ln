@@ -94,6 +94,7 @@ class Proveedores_model extends CI_Model {
             $proveedor->id=""; $proveedor->proveedor=""; $proveedor->domicilio=""; $proveedor->telefonos=""; $proveedor->email="";
             $proveedor->cuit=""; $proveedor->iva=""; $proveedor->localidad=""; $proveedor->cp=""; $proveedor->id_empresa="";
             $proveedor->dni=""; $proveedor->baja=""; $proveedor->id_etiqueta=""; $proveedor->rz="";
+            $proveedor->cbu="";$proveedor->cond_pago="";$proveedor->contacto="";
             return $proveedor;
         }  
         
@@ -111,11 +112,15 @@ class Proveedores_model extends CI_Model {
             $proveedor->id_empresa,
             $proveedor->dni,
             $proveedor->id_etiqueta,
-            $proveedor->rz
+            $proveedor->rz,
+            $proveedor->cond_pago,
+            $proveedor->cbu,
+            $proveedor->contacto,
+
         );
         
         $sql="INSERT INTO proveedores (proveedor,domicilio,telefonos,email,cuit,iva,localidad,cp,".
-            "id_empresa,dni,id_etiqueta,rz) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+            "id_empresa,dni,id_etiqueta,rz,cond_pago,cbu,contacto) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         return $this->db->query($sql, $mtz);   
         }    
         
@@ -134,11 +139,14 @@ class Proveedores_model extends CI_Model {
             $proveedor->dni,
             $proveedor->id_etiqueta,
             $proveedor->rz,
+            $proveedor->cond_pago,
+            $proveedor->cbu,
+            $proveedor->contacto,
             $proveedor->id    
         );
         
         $sql="UPDATE proveedores SET proveedor=?, domicilio=?, telefonos=?, email=?, cuit=?, iva=?,localidad=?, cp=?,".
-            " id_empresa=?, dni=?, id_etiqueta=?, rz=? WHERE id=?";
+            " id_empresa=?, dni=?, id_etiqueta=?, rz=?,cond_pago=?,cbu=?,contacto=? WHERE id=?";
         return $this->db->query($sql, $mtz);   
         }      
         
@@ -150,9 +158,10 @@ class Proveedores_model extends CI_Model {
         $datos=$this->db->query($sql, array($id))->result();
         
         if (count($datos)>0){//seteamos baja
-            $sql="UPDATE proveedores SET baja=? WHERE id=?";
+            /*$sql="UPDATE proveedores SET baja=? WHERE id=?";
             $this->db->query($sql, array(date("Y-m-d"),$id));
-            $retorno="El proveedor se ha dado de baja con éxito";
+            */
+            $retorno="NO SE BORRO.  El proveedor Tiene COMPRAS Cargadas";
         }else{//eliminamos
             $sql="DELETE FROM proveedores WHERE id=?";
             $this->db->query($sql, array($id));
