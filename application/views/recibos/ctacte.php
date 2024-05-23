@@ -22,7 +22,9 @@
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>recibos/opago/<?=$proveedor->id?>">Nuevo Recibo</a>
                     Fecha Desde<input type="date" class="form-control" name="fdesde" value="<?=$fdesde?>">
                     Fecha Hasta<input type="date" class="form-control" name="fhasta" value="<?=$fhasta?>">
-                    <button type="submit" class="btn btn-default">Buscar</button>		
+                    <button type="submit" class="btn btn-default">Buscar</button>
+                    <a href="<?php echo base_url(); ?>/recibos/exportar/<?=$proveedor->id?>/<?=$fdesde?>/<?=$fhasta?>/1" target="blank_" class="btn btn-default">Excel(.)</a>			
+                    <a href="<?php echo base_url(); ?>/recibos/exportar/<?=$proveedor->id?>/<?=$fdesde?>/<?=$fhasta?>/2" target="blank_" class="btn btn-default">Excel(,)</a>			
                     <br>
                 </div>
                 
@@ -55,7 +57,8 @@
                                     <td><?=number_format($total,2,".",",")?></td>
                                     <td><?php if($cta->tt=='O'){
                                         echo '  <a class="btn-default fa fa-eraser" onClick="borro('.$cta->id.','.$proveedor->id.')"></span></a>
-                                        <a class="btn-default fa fa-eye" onClick="verOP('.$cta->id.')"></span></a>';}
+                                        <a class="btn-default fa fa-eye" onClick="verOP('.$cta->id.')"></span></a>
+                                        <a class="btn-default fa fa-print" href="' .base_url() .'recibos/imprimir/'.$cta->id.'" target="blank_"></span></a>';}
                                         else{echo '  <a class="btn-default fa fa-eye" onClick="verFacturaCompra('.$cta->id.')"></span></a>';}
                                      ?></td>
                                     <td>                                        

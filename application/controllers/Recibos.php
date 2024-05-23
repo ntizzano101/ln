@@ -413,6 +413,34 @@ public function ingreso_pago_otro(){
     
     }
 
+    public function exportar($id,$f1,$f2,$f3){
+        //f3 formato de archivo
+        $this->load->library('funciones');
+        $this->load->model('recibo_model');        
+        $data=$this->recibo_model->listado_2($id,$f1,$f2);
+        $c="";
+        foreach($data as $d){
+            if($f3==1){
+                $c.=$d->fecha . ","  . $d->descrip . ","  . $d->debe . ","  . $d->haber . "\r\n" ; 
+            }   
+            if($f3==2){         
+             $c.=$d->fecha . ";"  . $d->descrip . ";"  . str_replace(".",",",$d->debe) . ";"  . str_replace(".",",",$d->haber) . "\r\n" ;             
+            }
+        }
+        //$c="<table>".$c."</table>";
+        $a1="exportar/cli_". $id."fec".$f1.".csv";
+        file_put_contents($a1,$c);
+        $this->funciones->exportar_excel($a1);
+    }
+    public function imprimir($id){
+        $this->load->library('funciones');
+        $this->load->model('recibo_model');     
+        $data["pago"]=$this->recibo_model->imprimir($id);
+      
+        $this->load->view('recibos/imprimir.php',$data);
+    }
+
+
 }
  
 ?>

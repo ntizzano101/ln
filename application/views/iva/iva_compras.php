@@ -14,12 +14,19 @@
                 <select name="empresa" id="empresa" class="form-control">
                                     <option value="">Seleccione una empresa</option>
                                 <?php foreach ($lista_empresas as $emp) {?>
-                                    <option value="<?=$emp->id_empresa?>">
+                                    <option value="<?=$emp->id_empresa?>"  
+                                        <?php
+                                            if($empresa==$emp->id_empresa){echo 'selected="selected"';}
+                                        ?>>
                                         <?=$emp->razon_soc?>
                                     </option>
                                 <?php }?>        
                                 </select>
                 <button type="submit" class="btn btn-primary">Filtrar</button>	
+                <a href="<?php echo base_url(); ?>/iva/siap_compras/1/<?=$periodo?>/<?=$empresa?>" target="blank_" class="btn btn-primary">Exportar Comp.</a>	
+                <a href="<?php echo base_url(); ?>/iva/siap_compras/2/<?=$periodo?>/<?=$empresa?>" target="blank_" class="btn btn-primary">Exportar Ali</a>	               
+                <a href="<?php echo base_url(); ?>/iva/exportar_compras/1/<?=$periodo?>/<?=$empresa?>" target="blank_" class="btn btn-default">Excel(.)</a>			
+                <a href="<?php echo base_url(); ?>/iva/exportar_compras/2/<?=$periodo?>/<?=$empresa?>" target="blank_" class="btn btn-default">Excel(,)</a>			
                 </form>
                 <table class="table">
                   <thead>

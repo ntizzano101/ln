@@ -204,6 +204,14 @@ class Iva_model extends CI_Model {
     $retorno2=$this->db->query($sql2, array($f1,$f2,$empresa))->result();
     $retorno3=$this->db->query($sql3, array($peri,$empresa))->result();
     return array($retorno1,$retorno2,$retorno3);
-  }      
+  }     
+  
+  public function siap_compras($p1,$p2){
+    $sql="select f.*,date_format(f.fecha,'%Y%m%d') as f2,p.proveedor,p.cuit from facturas f,proveedores p where periodo_iva=? and f.id_empresa=? and p.id=f.id_proveedor";
+    $ret=$this->db->query($sql, array($p1,$p2))->result();
+    return $ret;
+ }
+ 
+  
  }
 ?>

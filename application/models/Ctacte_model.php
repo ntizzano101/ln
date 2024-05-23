@@ -147,5 +147,27 @@ public function ver_opago($id){
        return $rta;
         
     }
+
+ public function imprimir($id){
+    $sql="SELECT DATE_FORMAT(fecha,'%d/%m/%Y') AS fecha,
+    o.id,total,razon_soc,p.proveedor,p.cuit from opago o inner join empresas e on e.id_empresa=o.id_empresa
+    inner join proveedores p on p.id=o.id_proveedor    
+     where o.id=?";
+   $rta = new stdClass();  
+   $rta->opago=$this->db->query($sql,array($id))->result();
+
+   $sql="SELECT DATE_FORMAT(fac.fecha,'%d/%m/%Y') AS fecha,
+     fac.letra,fac.numero,fac.puerto,fac.codigo_comp,fac.tipo_comp,op.monto
+     from facturas fac inner join opago_facturas op on fac.id_factura=op.id_factura where op.id_op=?";    
+   $rta->opago_facturas=$this->db->query($sql,array($id))->result();
+
+   $sql="select op.*,b.banco,b.cuenta,c.propio,c.vence,c.numero ,m.mpago
+   from opago_pago op inner join mpagos m on op.id_medio_pago=m.id 
+   left join bancos b on op.id_c_banco=b.id 
+   left join cheques c on c.id=op.id_cheque
+   where op.id_pago=?";
+   $rta->opago_pagos=$this->db->query($sql,array($id))->result();
+   return($rta);
+ }   
 }
 ?>

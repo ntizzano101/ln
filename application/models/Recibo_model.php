@@ -146,5 +146,46 @@ public function ver_opago($id){
       where id_factura=?",array($id))->result();     
     return $rta;
     }
+
+
+    public function listado_2($id_prov,$f1,$f2)
+    {
+        $sql="SELECT DATE_FORMAT(op.fecha,'%d/%m/%Y') AS fecha,'O' as tt ,concat('Recibo N°',op.id) as descrip, op.id, op.total, 0 AS debe, op.total AS haber,op.fecha as fe_orden".
+            " FROM opago op".
+        " WHERE op.id_cliente=? and fecha between ? and ? ".	
+        " UNION".
+        " SELECT DATE_FORMAT(fac.fecha,'%d/%m/%Y') AS fecha,'F'  ,concat(fac.letra,' (',fac.codigo_comp,') ' , fac.puerto,' - ',fac.numero), fac.id_factura,fac.total".
+            " ,IF(cod.id_tipo_comp=3, 0 , fac.total) AS debe,".
+            " IF(cod.id_tipo_comp=3 , fac.total ,0 ) AS haber,fac.fecha as fe_orden".
+        " FROM facturas fac".
+        " INNER JOIN cod_afip cod on fac.cod_afip = cod.cod_afip".
+        " WHERE fac.id_cliente=? and fecha between ? and ? ".
+        " ORDER BY fe_orden,tt";
+        
+        $retorno=$this->db->query($sql, array($id_prov,$f1,$f2,$id_prov,$f1,$f2))->result();
+        return $retorno;
+    } 
+
+    public function imprimir($id){
+        $sql="SELECT DATE_FORMAT(fecha,'%d/%m/%Y') AS fecha,
+        o.id,total,razon_soc,p.cliente,p.cuit from opago o LEFT join empresas e on e.id_empresa=o.id_empresa
+        LEFT join clientes p on p.id=o.id_cliente    
+         where o.id=?";
+       $rta = new stdClass();  
+       $rta->opago=$this->db->query($sql,array($id))->result();
+    
+       $sql="SELECT DATE_FORMAT(fac.fecha,'%d/%m/%Y') AS fecha,
+         fac.letra,fac.numero,fac.puerto,fac.codigo_comp,fac.tipo_comp,op.monto
+         from facturas fac inner join opago_facturas op on fac.id_factura=op.id_factura where op.id_op=?";    
+       $rta->opago_facturas=$this->db->query($sql,array($id))->result();
+    
+       $sql="select op.*,b.banco,b.cuenta,c.propio,c.vence,c.numero ,m.mpago
+       from opago_pago op inner join mpagos m on op.id_medio_pago=m.id 
+       left join bancos b on op.id_c_banco=b.id 
+       left join cheques c on c.id=op.id_cheque
+       where op.id_pago=?";
+       $rta->opago_pagos=$this->db->query($sql,array($id))->result();
+       return($rta);
+     }
 }
 ?>

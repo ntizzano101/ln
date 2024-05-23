@@ -10,8 +10,21 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">IVA VENTAS</div>     
                 <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>iva/ventas">                           
-                <input type="text" class="form-control" name="periodo" value="<?=$periodo?>" id="buscar" placeholder="aaaamm">
-                <button type="submit" class="btn btn-primary">Filtrar</button>	
+                Periodo <input type="text" class="form-control" name="periodo" value="<?=$periodo?>" id="buscar" placeholder="aaaamm">
+                <select name="empresa" id="empresa" class="form-control">
+                                    <option value="">Seleccione una empresa</option>
+                                <?php foreach ($lista_empresas as $emp) {?>
+                                    <option value="<?=$emp->id_empresa?>"  
+                                        <?php
+                                            if($empresa==$emp->id_empresa){echo 'selected="selected"';}
+                                        ?>>
+                                        <?=$emp->razon_soc?>
+                                    </option>
+                                <?php }?>        
+                                </select>
+                <button type="submit" class="btn btn-primary">Filtrar</button>	                
+                <a href="<?php echo base_url(); ?>/iva/exportar_compras/1/<?=$periodo?>/<?=$empresa?>" target="blank_" class="btn btn-default">Excel(.)</a>			
+                <a href="<?php echo base_url(); ?>/iva/exportar_compras/2/<?=$periodo?>/<?=$empresa?>" target="blank_" class="btn btn-default">Excel(,)</a>			
                 </form>
                 <table class="table">
                   <thead>

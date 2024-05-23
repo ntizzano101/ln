@@ -19,6 +19,8 @@
                 <?php }?>
                 <div class="panel-body">
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>ctacte/opago/<?=$proveedor->id?>">Nueva orden de pago</a>
+                    <a href="<?php echo base_url(); ?>/ctacte/exportar/<?=$proveedor->id?>/1" target="blank_" class="btn btn-default">Excel(.)</a>			
+                    <a href="<?php echo base_url(); ?>/ctacte/exportar/<?=$proveedor->id?>/2" target="blank_" class="btn btn-default">Excel(,)</a>			
                     <br>
                 </div>
                 
@@ -47,8 +49,11 @@
                                     <td><?=number_format($total,2,".",",")?></td>
                                     <td><?php if($cta->tt=='O'){
                                         echo '  <a class="btn-default fa fa-eraser" onClick="borro('.$cta->id.','.$proveedor->id.')"></span></a>
-                                        <a class="btn-default fa fa-eye" onClick="verOP('.$cta->id.')"></span></a>';}
-                                        else{echo '  <a class="btn-default fa fa-eye" onClick="verFacturaCompra('.$cta->id.')"></span></a>';}
+                                        <a class="btn-default fa fa-eye" onClick="verOP('.$cta->id.')"></span></a>
+                                        <a class="btn-default fa fa-print" href="' .base_url() .'ctacte/imprimir/'.$cta->id.'" target="blank_"></span></a>
+                                        ';}
+                                        else{echo '  <a class="btn-default fa fa-eye" onClick="verFacturaCompra('.$cta->id.')"></span></a>'
+                                            ;}
                                      ?></td>
                                     <td>                                        
                                      </td>
