@@ -506,7 +506,25 @@ class Articulos extends CI_Controller {
         $this->load->view('articulos/categorias.php',$data);
     }
     
-    
+    public function informeventa()
+    {
+        $hasta=$this->input->post('hasta');
+        if(empty($hasta)){$hasta=date('Y-m-d');}
+        $desde=$this->input->post('desde');
+        if(empty($desde)){$desde=date('Y-m-d');}
+        $this->load->model('facturas_model');
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas();         
+        $empresa=$this->input->post('empresa');
+        if(empty($empresa)){$empresa=1;}
+        $this->load->model('articulos_model');
+        $data["ventas"]=$this->articulos_model->ventas($desde,$hasta,$empresa);
+        $data["hasta"]=$hasta;
+        $data["desde"]=$desde;
+        $data["empresa"]=$empresa;       
+        $this->load->view('encabezado.php');
+        $this->load->view('menu.php');
+        $this->load->view('articulos/informeventa.php',$data);
+    }
 }
     
     

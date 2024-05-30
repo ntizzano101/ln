@@ -297,6 +297,16 @@ class Articulos_model extends CI_Model {
         {
         $sql="DELETE FROM categorias WHERE id_categoria=?";
         return $this->db->query($sql, array($id));   
-        }     
+        } 
+    public function ventas($desde,$hasta,$empesa){
+        $sql="SELECT sum(i.precio) as precio, sum(i.cantidad) as cantidad ,  a.articulo,a.id_Art
+        FROM articulos a inner join  factura_items i  on a.id_art=i.id_art        
+        inner join facturas f on f.id_factura= i.id_factura
+        WHERE f.id_cliente > 0 and f.fecha between ? and ? and f.id_empresa=?
+        group by a.id_art,a.articulo order by a.articulo
+        ";
+        $datos=$this->db->query($sql, array($desde,$hasta,$empesa))->result();
+        return $datos;
+    }        
 }
 ?>

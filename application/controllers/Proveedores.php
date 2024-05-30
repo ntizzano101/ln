@@ -208,6 +208,23 @@ class Proveedores extends CI_Controller {
         $data["proveedores"]=$this->proveedores_model->listado("");
         $this->load->view('proveedores/proveedores.php',$data);
     }
+
+    public function mayor()
+    {
+        $hasta=$this->input->post('hasta');
+        if(empty($hasta)){$hasta=date('Y-m-d');}
+        $this->load->model('facturas_model');
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas();         
+        $empresa=$this->input->post('empresa');
+        if(empty($empresa)){$empresa=1;}
+        $this->load->model('proveedores_model');
+        $data["mayor"]=$this->proveedores_model->mayor($hasta,$empresa);
+        $data["hasta"]=$hasta;
+        $data["empresa"]=$empresa;       
+        $this->load->view('encabezado.php');
+        $this->load->view('menu.php');
+        $this->load->view('proveedores/mayor.php',$data);
+    }
 }
     
     

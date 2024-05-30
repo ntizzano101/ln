@@ -168,6 +168,20 @@ class Proveedores_model extends CI_Model {
             $retorno ="El proveedor se ha eliminado con éxito";
         }
         return $retorno;
+        }     
+        
+        public function mayor($fecha,$empresa)
+        {
+            $sql="                
+            select T1.id_proveedor,T1.id_empresa,SUM(debe) as debe ,SUM(haber) as haber,proveedores.proveedor,proveedores.cuit,0 as saldo from      
+            (select id_empresa,id_proveedor,sum(case when tipo_comp<3 then total else 0 end) as debe ,SUM(case when tipo_comp=3 then total else 0 end) as haber 
+                        from facturas where fecha <= ? and id_proveedor >0  group by id_proveedor,id_empresa   
+                    UNION
+                select id_empresa,id_proveedor,0,sum(total) from opago where fecha <=? and id_proveedor > 0 group by id_proveedor,id_empresa
+             ) as T1  LEFT JOIN proveedores on T1.id_proveedor = proveedores.id where T1.id_empresa=?
+             group by T1.id_proveedor,T1.id_empresa,proveedores.proveedor,proveedores.cuit  order by proveedores.proveedor
+            ";
+            return $this->db->query($sql, array($fecha,$fecha,$empresa))->result();   
         }      
 }
 ?>

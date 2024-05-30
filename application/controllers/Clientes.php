@@ -356,6 +356,23 @@ class Clientes extends CI_Controller {
         $data["etiquetas"]=$this->clientes_model->etiqueta_listado("");
         $this->load->view('clientes/etiquetas.php',$data);
     }
+
+    public function mayor()
+    {
+        $hasta=$this->input->post('hasta');
+        if(empty($hasta)){$hasta=date('Y-m-d');}
+        $this->load->model('facturas_model');
+        $data["lista_empresas"]=$this->facturas_model->lista_empresas();         
+        $empresa=$this->input->post('empresa');
+        if(empty($empresa)){$empresa=1;}
+        $this->load->model('clientes_model');
+        $data["mayor"]=$this->clientes_model->mayor($hasta,$empresa);
+        $data["hasta"]=$hasta;
+        $data["empresa"]=$empresa;       
+        $this->load->view('encabezado.php');
+        $this->load->view('menu.php');
+        $this->load->view('clientes/mayor.php',$data);
+    }
 }
     
     

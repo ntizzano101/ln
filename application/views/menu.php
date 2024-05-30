@@ -22,6 +22,8 @@
             <li><a href="<?=base_url()?>ventas/listar">Comprobantes</a></li>          
 			            <li><hr></li>  
             <li><a href="<?=base_url()?>retenciones">Retenciones</a></li>                			   
+            <li><hr></li>  
+            <li><a href="<?=base_url()?>clientes/mayor">Mayor Clientes</a></li>                			   
           </ul>
         </li> 
         <li class="dropdown">
@@ -30,7 +32,9 @@
             <li><a href="<?=base_url()?>proveedores">Proveedores</a></li>
             <li><hr></li>
             <li><a href="<?=base_url()?>proveedores">Cuenta Corriente</a></li>
-            <li><a href="<?=base_url()?>facturas">Facturas</a></li>          
+            <li><a href="<?=base_url()?>facturas">Facturas</a></li> 
+            <li><hr></li>  
+            <li><a href="<?=base_url()?>proveedores/mayor">Mayor Proveedores</a></li>            
           </ul>
         </li> 
 		  
@@ -54,6 +58,9 @@
             <li><a href="<?=base_url()?>articulos">Articulos</a></li>
             <li><a href="<?=base_url()?>rubros">Rubros</a></li>
             <li><a href="<?=base_url()?>categorias">Categorias</a></li>
+            <li><hr></li>  
+            <li><a href="<?=base_url()?>articulos/informeventa">Ventas x Artiulos</a></li>                			   
+          
           </ul>
         </li>
 		
