@@ -237,6 +237,19 @@ class Clientes_model extends CI_Model {
         {
         $sql="DELETE FROM etiquetas WHERE id=?";
         return $this->db->query($sql, array($id));   
-        }    
+        }
+    public function mayor($fecha,$empresa)
+        {
+            $sql="                
+            select T1.id_cliente,T1.id_empresa,SUM(debe) as debe ,SUM(haber) as haber,clientes.cliente,clientes.cuit,0 as saldo from      
+            (select id_empresa,id_cliente,sum(case when tipo_comp<3 then total else 0 end) as debe ,SUM(case when tipo_comp=3 then total else 0 end) as haber 
+                        from facturas where fecha <= ? and id_cliente >0  group by id_cliente,id_empresa   
+                    UNION
+                select id_empresa,id_cliente,0,sum(total) from opago where fecha <=? and id_cliente > 0 group by id_cliente,id_empresa
+             ) as T1  LEFT JOIN clientes on T1.id_cliente = clientes.id where T1.id_empresa=?
+             group by T1.id_cliente,T1.id_empresa,clientes.cliente,clientes.cuit  order by clientes.cliente
+            ";
+            return $this->db->query($sql, array($fecha,$fecha,$empresa))->result();   
+        }        
 }
 ?>
