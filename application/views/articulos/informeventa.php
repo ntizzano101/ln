@@ -9,7 +9,7 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">ARTICULOS VENDIDOS</div>     
-                <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>articulos/infomeventa">                           
+                <form class="navbar-form navbar-left" role="search" method="POST" action="<?php echo base_url(); ?>articulos/informeventa">                           
                 Desde  <input type="date" class="form-control" name="desde" value="<?=$desde?>" id="buscar" placeholder="dd/mm/yyyy">
                 Hasta  <input type="date" class="form-control" name="hasta" value="<?=$hasta?>" id="buscar" placeholder="dd/mm/yyyy">
                 <select name="empresa" id="empresa" class="form-control">
