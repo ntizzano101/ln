@@ -217,6 +217,91 @@ class Ventas extends CI_Controller {
         $this->load->view('ventas/facturas.php',$data);
     }
      
+    public function comprobante($id){
+        if(!($id>0)){ return false;}
+        $this->load->model('ventas_model');
+        $data["venta"]=$this->ventas_model->venta($id);
+        $data["empresa"]=$this->ventas_model->empresa($id);
+        $data["cliente"]=$this->ventas_model->cliente($id);
+        $data["items"]=$this->ventas_model->items($id);   
+       
+        $this->load->view('ventas/comprobante.php',$data);
+
+    }
+
+    public function preparacion(){
+        $this->load->model('ventas_model');
+        $cli=trim($this->input->post('cliente'));
+        $ven=trim($this->input->post('vendedor'));
+        $des=trim($this->input->post('desde'));
+        $has=trim($this->input->post('hasta'));        
+        
+        $remitos=$this->ventas_model->preparacion($cli,$ven,$des,$has);          
+        $tabla="";
+        $control="";
+        $row="";
+        $remi="";
+        $cant=0;
+        $suma=0;
+        foreach($remitos as $r){            
+            if($control==""){$control=$r->vendedor.$r->ncliente;}
+            if($control<>$r->vendedor.$r->ncliente){
+                $tabla=$tabla.$row;
+                $control=$r->vendedor.$r->ncliente;
+                $remi="";
+                $cant=0;
+                $suma=0;
+            }
+            if($remi==""){$remi='<a href="#" onClick="ver('.$r->Id.')">'.$r->Id.'</a>';}else{$remi=$remi. ' - <a href="#" onClick="ver('.$r->Id.')">'.$r->Id.'</a>';}            
+            $cant=$cant+1;
+            $suma+=$r->Sifon * $r->psifon +  $r->X12 * $r->pX12+ $r->X20*$r->pX20 + $r->X12BS*$r->pX12BS;
+            $row="<tr>
+            <td>".$r->vendedor."</td>
+            <td>".$r->ncliente."</td>
+            <td>".$cant."</td>
+            <td>".$remi."</td>
+            <td>". $suma ."</td>            
+            </tr>";
+            
+            
+        }       
+        $data["tabla"]=$tabla.$row;
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp); 
+        return 0;
+        exit;            
+
+    }
+
+    public function remito_veo(){
+        $id=trim($this->input->post('id'));
+        $this->load->model('ventas_model');       
+        $tabla=$this->ventas_model->remito_veo($id);          
+        $data["vendedor"]=$tabla[0]->vendedor;
+        $data["cliente"]=$tabla[0]->ncliente;
+        $data["Id"]=$tabla[0]->Id;
+        $row="";
+        if($tabla[0]->Sifon<>0){$row.="<tr><td>Sifon</td><td>".$tabla[0]->Sifon."</td><td>".$tabla[0]->psifon."</td></td><td>".$tabla[0]->Sifon*$tabla[0]->psifon."</td></tr>";}     
+        if($tabla[0]->X12<>0){$row.="<tr><td>X12</td><td>".$tabla[0]->X12."</td><td>".$tabla[0]->X12."</td></td><td>".$tabla[0]->X12 * $tabla[0]->pX12."</td></tr>";}     
+        if($tabla[0]->X20<>0){$row.="<tr><td>X20</td><td>".$tabla[0]->X20."</td><td>".$tabla[0]->pX20."</td></td><td>".$tabla[0]->X20 * $tabla[0]->pX20."</td></tr>";}     
+        if($tabla[0]->X12BS<>0){$row.="<tr><td>X20</td><td>".$tabla[0]->X12BS."</td><td>".$tabla[0]->pX12BS."</td></td><td>".$tabla[0]->X12BS * $tabla[0]->pX12BS."</td></tr>";}             
+        $data["items"]="<table class='table'>
+        <thead>
+               <tr>
+                          <th>Item</th>
+                          <th>Cantidad</th>
+                          <th>Pre.U.</th>
+                          <th>Sub Total</th>                          
+                </tr>
+        </thead>
+        <tbody>".$row."</tbody></table>";
+        
+        $resp=json_decode(json_encode($data), true);
+        $this->send($resp); 
+        return 0;
+        exit;    
+    }
+
     private function send($array) {
 
         if (!is_array($array)) return false;
@@ -230,18 +315,6 @@ class Ventas extends CI_Controller {
         }
 
         exit(json_encode($send, JSON_FORCE_OBJECT));
-
-    }
-
-    public function comprobante($id){
-        if(!($id>0)){ return false;}
-        $this->load->model('ventas_model');
-        $data["venta"]=$this->ventas_model->venta($id);
-        $data["empresa"]=$this->ventas_model->empresa($id);
-        $data["cliente"]=$this->ventas_model->cliente($id);
-        $data["items"]=$this->ventas_model->items($id);   
-       
-        $this->load->view('ventas/comprobante.php',$data);
 
     }
     

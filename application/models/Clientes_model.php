@@ -251,5 +251,53 @@ class Clientes_model extends CI_Model {
             ";
             return $this->db->query($sql, array($fecha,$fecha,$empresa))->result();   
         }        
+        public function migrar(){
+            $sql="truncate table vendedores";
+            $this->db->query($sql);
+            $sql="insert into vendedores select Id,case when NombreRemito='' then Nombre else NombreRemito end from ives.vendedor where baja='False'";
+            $this->db->query($sql);
+            $sql="truncate table clientes";
+            $this->db->query($sql);
+            $sql="SELECT * FROM ives.clientes WHERE upper(Cliente) like '%LIBRE%' or upper(cliente) like '%ABONO%' or upper(Tipo) IN ('ABONO','CTA/CTE')";
+            $cli_ori=$this->db->query($sql)->result();
+            foreach($cli_ori as $o){
+                $d = new stdClass();  
+                $d->id=$o->Id;
+                $d->cliente=$o->Cliente;
+                $d->domicilio=$o->Direccion;  
+                $d->telefonos=$o->Telefono;
+                $d->email=$o->Email;
+                $d->cuit=$o->CUIT;                
+                if(strlen($o->CUIT)==11 and $o->CUIT<>'00000000000'){$d->iva=1; $d->dni=0;}
+                else{$d->iva=5; $d->dni=$o->CUIT;}        
+                $d->localidad="";
+                $d->id_empresa=1;
+                $d->baja=Null;
+                $d->id_vendedor=$o->Vendedor;
+                $this->db->insert('clientes',$d);
+            }            
+        }
+            public function clientes_auto(){
+                $this->db->select("id,concat(cliente,' ',domicilio) as cliente");
+                $this->db->order_by('cliente');
+                $query=$this->db->get('clientes');                
+                return($query->result());
+                
+            }
+            public function remitos_sin_factura($id_cliente,$id_vendedor){
+                /*$this->db->select("NumeroRemito,");
+                $this->db->where('nombre');
+                return($this->db->get('vendedores'));
+                */
+               return(Null) ;
+            }
+            public function vendedores(){
+                $this->db->select("id,nombre");
+                $this->db->order_by("nombre");
+                return($this->db->get('vendedores')->result());
+                
+            }
+        
+        
 }
 ?>

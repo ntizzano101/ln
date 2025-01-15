@@ -438,5 +438,40 @@ class Ventas_model extends CI_Model {
         } 
        return "";
     }
+
+    public function preparacion($cli,$ven,$des,$has){
+          $des=$des . " 00:00:00";
+          $has=$has . " 23:59:59";
+          $fil="";
+          if($ven!=0){$fil.=" and v.id=".$ven;}
+          if($cli!=0){$fil.=" and c.id=".$cli;}
+          $sql="select ir.*,concat(c.cliente,' ',c.domicilio) as ncliente,
+          (select precio1 from articulos where codigo='Sifon') as psifon,
+          (select precio1 from articulos where codigo='X12') as pX12, 
+          (select precio1 from articulos where codigo='X20') as pX20,           
+          (select precio1 from articulos where codigo='X12BS') as pX12BS, 
+          v.nombre as vendedor from ives.repartos ir inner join lanico.clientes c on ir.Cliente=c.id inner join lanico.vendedores v on ir.Vendedor=v.id 
+          where Fecha between ? and ? ".$fil." order by v.nombre,ncliente";         
+          $s=$this->db->query($sql, array($des,$has))->result();         
+          return($s);
+    }
+
+    public function preparacion_art(){        
+        $sql="select * from articulos";         
+        $s=$this->db->query($sql)->result();         
+        return($s);
+  }
+
+    public function remito_veo($id){
+        $sql="select ir.*,c.cliente as ncliente, v.nombre as vendedor ,
+          (select precio1 from articulos where codigo='Sifon') as psifon,
+          (select precio1 from articulos where codigo='X12') as pX12, 
+          (select precio1 from articulos where codigo='X20') as pX20,           
+          (select precio1 from articulos where codigo='X12BS') as pX12BS 
+        from ives.repartos ir inner join lanico.clientes c on ir.Cliente=c.id inner join lanico.vendedores v on ir.Vendedor=v.id 
+           where ir.Id=?";
+        $s=$this->db->query($sql,array($id))->result();         
+        return($s);
+    }
  }
 ?>

@@ -169,5 +169,6 @@ public function ver_opago($id){
    $rta->opago_pagos=$this->db->query($sql,array($id))->result();
    return($rta);
  }   
+ 
 }
 ?>

@@ -23,7 +23,9 @@
 			            <li><hr></li>  
             <li><a href="<?=base_url()?>retenciones">Retenciones</a></li>                			   
             <li><hr></li>  
-            <li><a href="<?=base_url()?>clientes/mayor">Mayor Clientes</a></li>                			   
+            <li><a href="<?=base_url()?>clientes/mayor">Mayor Clientes</a></li>                			  
+            <li><hr></li>  
+            <li><a href="<?=base_url()?>clientes/automatica">Facturacion Automatica</a></li>            
           </ul>
         </li> 
         <li class="dropdown">

@@ -40,7 +40,12 @@ class Clientes extends CI_Controller {
         $this->load->view('clientes/clientes.php',$data);
 
     }
-    
+    public function migrar(){
+        $this->load->model('clientes_model');
+        $this->clientes_model->migrar();
+        die("lito");
+
+    }
     public function buscar()
     {
         $buscar=$this->input->post('buscar');
@@ -373,10 +378,20 @@ class Clientes extends CI_Controller {
         $this->load->view('menu.php');
         $this->load->view('clientes/mayor.php',$data);
     }
-}
-    
-    
-    
-    
 
+
+    public function automatica()
+    {
+        $this->load->model('clientes_model');
+        $data["cliente"]=$this->clientes_model->clientes_auto("");
+        $data["vendedor"]=$this->clientes_model->vendedores("");
+        $data["remito"]=$this->clientes_model->remitos_sin_factura(0,0);
+        $data["desde"]=date("Y-m-d");
+        $data["hasta"]=date("Y-m-d");
+        $this->load->view('encabezado.php');
+        $this->load->view('menu.php');
+        $this->load->view('ventas/automatica.php',$data);
+    }
+
+} 
 ?>
